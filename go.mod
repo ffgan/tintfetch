@@ -1,5 +1,3 @@
-module github.com/ffgan/gf
+module github.com/ffgan/tintfetch
 
 go 1.24
-
-require github.com/armon/go-radix v1.0.0

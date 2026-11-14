@@ -2,18 +2,15 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
-	"os"
 
-	"github.com/ffgan/gf/configs"
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/configs"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
-const Version = "0.0.1"
+var Version = "0.1.0-dev"
 
-var show_version bool
-
-func setupArgs(config *configs.Config) {
+func setupArgs(config *configs.Config, flag *flag.FlagSet, version *bool) {
+	var no_config, verbose, print_config, vverbose string
 	// Info
 	flag.StringVar(&config.TitleFqdn, "title_fqdn", config.TitleFqdn, `# Hide/Show Fully qualified domain name. 
 # 
@@ -687,28 +684,10 @@ func setupArgs(config *configs.Config) {
 
 	// --help
 
-	flag.BoolVar(&show_version, "version", false, "Show gf version")
+	flag.BoolVar(version, "version", false, "Show Tintfetch version")
 
 	// --gen-man
 	// --json
 	// --travis
 
-}
-
-var (
-	no_config    string
-	verbose      string
-	print_config string
-	vverbose     string
-)
-
-func parseArgs(config *configs.Config) {
-	// TODO: if user setup config file in args. handle it first
-	setupArgs(config)
-
-	flag.Parse()
-	if show_version {
-		fmt.Printf("GF %s\n", Version)
-		os.Exit(0)
-	}
 }

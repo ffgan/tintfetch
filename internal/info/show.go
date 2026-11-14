@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ffgan/gf/internal/logo"
+	"github.com/ffgan/tintfetch/internal/logo"
 )
 
 func PrintInfo(asciiart []string) int {

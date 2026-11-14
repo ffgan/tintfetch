@@ -1,0 +1,18 @@
+Source: tintfetch
+Section: utils
+Priority: optional
+Maintainer: ffgan <ffgan@users.noreply.github.com>
+Build-Depends: debhelper-compat (= 13), golang-any (>= 2:1.24~)
+Standards-Version: 4.7.2
+Homepage: https://github.com/ffgan/gf
+Rules-Requires-Root: no
+
+Package: tintfetch
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Suggests: hyfetch, pciutils, x11-xserver-utils
+Description: display system information with colorful distribution artwork
+ Tintfetch displays operating system, hardware and desktop information.
+ It includes a native Go engine with plain text and JSON output, ASCII
+ distribution logos and color presets. Optional upstream engines provide
+ additional compatibility when installed separately.

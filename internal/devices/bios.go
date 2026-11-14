@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	cli "github.com/ffgan/gf/internal/CLI"
+	cli "github.com/ffgan/tintfetch/internal/CLI"
 )
 
 func GetBIOS(osName string) string {

@@ -5,14 +5,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetDistro(osName, os_arch, kernel_machine, distroShorthand, ascii_distro string) (string, string) {
 	var distro string
 
 	switch osName {
-	case Linux, BSD, MINIX, Ironclad:
+	case Linux, BSD, FreeBSD, OpenBSD, NetBSD, DragonFly, Bitrig, MINIX, Ironclad:
 		switch {
 		case utils.FileExists("/etc/os-release"):
 			// Try to parse /etc/os-release
@@ -42,7 +42,7 @@ func GetDistro(osName, os_arch, kernel_machine, distroShorthand, ascii_distro st
 			ver := utils.ReadFirstLine("/etc/redhat-release")
 			distro = "Red Hat " + ver
 		default:
-			distro = "Linux"
+			distro = osName
 		}
 	case Darwin:
 		out := utils.RunCommand("sw_vers", "-productVersion")
@@ -80,6 +80,9 @@ func GetDistro(osName, os_arch, kernel_machine, distroShorthand, ascii_distro st
 		// 	distro = AIX + " " + kernelVersion
 		// default:
 		// 	distro = osName + " " + kernelVersion
+	}
+	if strings.TrimSpace(distro) == "" {
+		distro = osName
 	}
 	var machine_arch string
 	switch osName {

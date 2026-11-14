@@ -7,18 +7,18 @@ import (
 
 	"strconv"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
-func GetCPU(OS, Machine, ShowCores, ShowSpeed, ShowTemp, ShowBrand, CoreType, SpeedShort, TempUnit string) string {
+func GetCPU(OS, Machine, ShowCores, ShowSpeed, ShowTemp, ShowBrand, CoreType, SpeedShort, TempUnit string, speedType ...string) string {
 	var showCores bool
 	var showSpeed bool
 	var showTemp bool
 	var showBrand bool
 	var speedShort bool
-	var tempUnit string // "C" or "F"
+	tempUnit := TempUnit // "C" or "F"
 
-	if ShowCores == utils.ON {
+	if ShowCores == utils.ON || ShowCores == "logical" || ShowCores == "physical" {
 		showCores = true
 	}
 
@@ -26,7 +26,7 @@ func GetCPU(OS, Machine, ShowCores, ShowSpeed, ShowTemp, ShowBrand, CoreType, Sp
 		showSpeed = true
 	}
 
-	if ShowTemp == utils.ON {
+	if ShowTemp == utils.ON || ShowTemp == "C" || ShowTemp == "F" {
 		showTemp = true
 	}
 
@@ -48,6 +48,9 @@ func GetCPU(OS, Machine, ShowCores, ShowSpeed, ShowTemp, ShowBrand, CoreType, Sp
 		TempUnit:   tempUnit,
 	}
 
+	if len(speedType) > 0 {
+		config.SpeedType = speedType[0]
+	}
 	return getCPU(OS, Machine, config)
 }
 
@@ -61,6 +64,7 @@ type CPUInfo struct {
 }
 
 type CPUConfig struct {
+	SpeedType  string
 	ShowCores  bool
 	ShowSpeed  bool
 	ShowTemp   bool
@@ -73,8 +77,7 @@ type CPUConfig struct {
 func getCPU(OS, Machine string, config CPUConfig) string {
 	info, err := GetCPUInfo(OS, Machine, config)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-		os.Exit(1)
+		return ""
 	}
 	return FormatCPUInfo(info, config)
 }
@@ -143,21 +146,15 @@ func getCPULinux(info *CPUInfo, config CPUConfig) (*CPUInfo, error) {
 		}
 		info.Cores = processorCount
 	} else {
-		// Physical cores
-		coreIDs := make(map[string]bool)
-		for _, line := range lines {
-			if strings.HasPrefix(line, "core id") {
-				parts := strings.Split(line, ":")
-				if len(parts) >= 2 {
-					coreIDs[strings.TrimSpace(parts[1])] = true
-				}
-			}
-		}
-		info.Cores = len(coreIDs)
+		info.Cores = physicalCoreCount(string(data))
 	}
 
 	// Get CPU speed
-	speedFile := "/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq"
+	speedName := config.SpeedType
+	if speedName == "" {
+		speedName = "scaling_max_freq"
+	}
+	speedFile := "/sys/devices/system/cpu/cpu0/cpufreq/" + speedName
 	if data, err := os.ReadFile(speedFile); err == nil {
 		if speed, err := strconv.Atoi(strings.TrimSpace(string(data))); err == nil {
 			info.Speed = speed / 1000 // Convert KHz to MHz
@@ -279,26 +276,28 @@ func getCPUSolaris(info *CPUInfo, config CPUConfig) (*CPUInfo, error) {
 		}
 	}
 
-	// Get CPU speed
-	out, err = utils.CommandOutput("sh", "-c", "psrinfo -v | awk '/operates at/ {print $6; exit}'")
+	// Get speed and core counts without invoking a shell pipeline.
+	out, err = utils.CommandOutput("psrinfo", "-v")
 	if err == nil {
-		if speed, err := strconv.Atoi(strings.TrimSpace(string(out))); err == nil {
-			info.Speed = speed
+		for _, line := range strings.Split(string(out), "\n") {
+			if strings.Contains(line, "operates at") {
+				fields := strings.Fields(line)
+				if len(fields) > 5 {
+					info.Speed, _ = strconv.Atoi(fields[5])
+				}
+				break
+			}
 		}
 	}
-
-	// Get CPU cores
-	var cmd string
 	if config.CoreType == "logical" {
-		cmd = "kstat -m cpu_info | grep -c chip_id"
+		out, err = utils.CommandOutput("kstat", "-m", "cpu_info")
+		if err == nil {
+			info.Cores = strings.Count(string(out), "chip_id")
+		}
 	} else {
-		cmd = "psrinfo -p"
-	}
-
-	out, err = utils.CommandOutput("sh", "-c", cmd)
-	if err == nil {
-		if cores, err := strconv.Atoi(strings.TrimSpace(string(out))); err == nil {
-			info.Cores = cores
+		out, err = utils.CommandOutput("psrinfo", "-p")
+		if err == nil {
+			info.Cores, _ = strconv.Atoi(strings.TrimSpace(string(out)))
 		}
 	}
 
@@ -368,4 +367,29 @@ func FormatCPUInfo(info *CPUInfo, config CPUConfig) string {
 	}
 
 	return cpu
+}
+
+// physicalCoreCount distinguishes cores with the same ID on different sockets.
+func physicalCoreCount(cpuinfo string) int {
+	cores := map[string]bool{}
+	logical := 0
+	for _, block := range strings.Split(strings.TrimSpace(cpuinfo), "\n\n") {
+		fields := map[string]string{}
+		for _, line := range strings.Split(block, "\n") {
+			key, value, ok := strings.Cut(line, ":")
+			if ok {
+				fields[strings.TrimSpace(key)] = strings.TrimSpace(value)
+			}
+		}
+		if _, ok := fields["processor"]; ok {
+			logical++
+		}
+		if core, ok := fields["core id"]; ok {
+			cores[fields["physical id"]+":"+core] = true
+		}
+	}
+	if len(cores) == 0 {
+		return logical
+	}
+	return len(cores)
 }

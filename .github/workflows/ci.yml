@@ -1,0 +1,53 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  go:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go: ['1.24.x', 'stable']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache: false
+      - run: go test ./...
+      - run: go vet ./...
+      - run: go build -trimpath -o tintfetch .
+      - run: ./tintfetch --version
+        shell: bash
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: 'stable'
+          cache: false
+      - run: go test -race ./...
+      - run: test -z "$(gofmt -l $(git ls-files '*.go'))"
+      - run: make check install DESTDIR="$RUNNER_TEMP/stage" PREFIX=/usr
+      - run: scripts/smoke.sh build/tintfetch
+      - run: scripts/reproducible.sh
+  debian:
+    runs-on: ubuntu-latest
+    container: debian:unstable
+    steps:
+      - run: apt-get update && apt-get install -y git ca-certificates build-essential debhelper golang-any lintian
+      - uses: actions/checkout@v4
+      - run: dpkg-buildpackage -us -uc -b
+      - run: lintian --fail-on error ../tintfetch_*.deb
+  fedora:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - run: dnf install -y git golang make rpm-build findutils tar gzip
+      - uses: actions/checkout@v4
+      - run: make dist VERSION=0.1.0
+      - run: rpmbuild -ba packaging/rpm/tintfetch.spec --define "_sourcedir $PWD/build"

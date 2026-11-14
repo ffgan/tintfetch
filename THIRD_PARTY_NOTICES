@@ -1,0 +1,55 @@
+Tintfetch contains code, configuration descriptions, distribution matching data,
+and ASCII artwork derived from Neofetch and the HyFetch-maintained neofetch script.
+
+Copyright (c) 2015-2023 Dylan Araps
+License: MIT (full text in LICENSE)
+
+Original project: https://github.com/dylanaraps/neofetch
+Maintained fork: https://github.com/hykilpikonna/hyfetch
+Migration source identified by the maintainer: https://github.com/ffgan/hyfetch
+Reference inspected: 2252fc36e76eebc42030c383784f63f9489f5630
+Reference script version: 8.0.4
+
+All 384 files in assets/ match text embedded in that reference's neofetch
+script. See docs/provenance.md and docs/assets.sha256 for the verification
+method and limits. Preserve these notices with redistributed binaries: the
+artwork is embedded in the executable. Distribution names and marks remain
+the property of their respective owners; no endorsement is implied.
+
+HyFetch and neofetch invoked through --engine are separate installed programs,
+not bundled implementations. Their licenses and dependencies apply separately.
+
+The former github.com/armon/go-radix dependency has been replaced by an original
+minimal prefix registry; no third-party Go module is required for this build.
+
+Go runtime and standard library (included in compiled Go executables)
+Source: https://go.dev/
+License: BSD-3-Clause
+
+Copyright 2009 The Go Authors.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+   * Redistributions of source code must retain the above copyright
+notice, this list of conditions and the following disclaimer.
+   * Redistributions in binary form must reproduce the above
+copyright notice, this list of conditions and the following disclaimer
+in the documentation and/or other materials provided with the
+distribution.
+   * Neither the name of Google LLC nor the names of its
+contributors may be used to endorse or promote products derived from
+this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

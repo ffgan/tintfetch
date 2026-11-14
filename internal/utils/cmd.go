@@ -2,8 +2,10 @@ package utils
 
 import (
 	"bytes"
+	"context"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 func RunFirst(cmd string, args ...string) string {
@@ -27,6 +29,9 @@ func RunCommandCount(name string, args ...string) int {
 	if err != nil {
 		return 0
 	}
+	if len(bytes.TrimSpace(out)) == 0 {
+		return 0
+	}
 	lines := strings.Count(string(out), "\n")
 	if strings.HasSuffix(string(out), "\n") {
 		return lines
@@ -44,12 +49,20 @@ func CommandExists(cmd string) bool {
 }
 
 func CommandOutput(name string, args ...string) ([]byte, error) {
-	out, err := exec.Command(name, args...).Output()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, name, args...)
+	command.WaitDelay = 100 * time.Millisecond
+	out, err := command.Output()
 	return out, err
 }
 
 func CommandCombinedOutput(name string, args ...string) ([]byte, error) {
-	out, err := exec.Command(name, args...).CombinedOutput()
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	command := exec.CommandContext(ctx, name, args...)
+	command.WaitDelay = 100 * time.Millisecond
+	out, err := command.CombinedOutput()
 	return out, err
 }
 
@@ -59,10 +72,15 @@ func ExecOutput(name string, args ...string) string {
 }
 
 func GetPkgCount(cmd ...string) int {
+	if len(cmd) == 0 {
+		return 0
+	}
 	out, err := CommandOutput(cmd[0], cmd[1:]...)
 	if err != nil {
 		return 0
 	}
-	lines := bytes.Count(out, []byte{'\n'})
-	return lines
+	if len(bytes.TrimSpace(out)) == 0 {
+		return 0
+	}
+	return len(strings.Split(strings.TrimSpace(string(out)), "\n"))
 }

@@ -6,89 +6,41 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
+var programVersionPattern = regexp.MustCompile(`[0-9]+(?:\.[0-9]+)+(?:[a-zA-Z0-9.-]*)`)
+
 func GetShell(shellPath, shellVersion string) string {
-	shellEnv := os.Getenv("SHELL")
-	if shellEnv == "" {
+	executable := os.Getenv("SHELL")
+	if executable == "" {
 		return ""
 	}
-
-	var shell string
-	switch shellPath {
-	case utils.ON:
-		shell = shellEnv + " "
-	case utils.OFF:
-		shell = filepath.Base(shellEnv) + " "
+	name := filepath.Base(executable)
+	display := name
+	if shellPath == utils.ON {
+		display = executable
 	}
-
-	// If version output is disabled, return early
 	if shellVersion != utils.ON {
-		return shell
+		return display
 	}
-
-	shellName := filepath.Base(shellEnv)
-
-	switch shellName {
-	case "bash":
-		version := os.Getenv("BASH_VERSION")
-		if version == "" {
-			version = utils.RunCommand("-c", "printf %s \"$BASH_VERSION\"")
-		}
-		shell += strings.Split(version, "-")[0]
-
+	var version string
+	switch name {
 	case "sh", "ash", "dash", "es":
-		// no version info
-	case "ksh", "mksh", "pdksh", "lksh":
-		version := utils.RunCommand("-c", "printf %s \"$KSH_VERSION\"")
-		version = strings.ReplaceAll(version, " * KSH", "")
-		version = strings.ReplaceAll(version, "version", "")
-		shell += strings.TrimSpace(version)
-
+		return display
+	case "bash":
+		version = os.Getenv("BASH_VERSION")
 	case "osh":
-		version := os.Getenv("OIL_VERSION")
-		if version == "" {
-			version = utils.RunCommand("-c", "printf %s \"$OIL_VERSION\"")
+		version = os.Getenv("OIL_VERSION")
+	}
+	if version == "" {
+		out, err := utils.CommandCombinedOutput(executable, "--version")
+		if err == nil {
+			version = strings.Split(string(out), "\n")[0]
 		}
-		shell += version
-
-	case "tcsh":
-		version := utils.RunCommand("-c", "printf %s $tcsh")
-		shell += version
-
-	case "yash":
-		version := utils.RunCommand("--version")
-		version = strings.ReplaceAll(version, " "+shellName, "")
-		version = strings.ReplaceAll(version, " Yet another shell", "")
-		version = regexp.MustCompile(`Copyright.*`).ReplaceAllString(version, "")
-		shell += strings.TrimSpace(version)
-
-	case "nu":
-		version := utils.RunCommand("-c", "version | get version")
-		version = strings.ReplaceAll(version, " "+shellName, "")
-		shell += version
-
-	default:
-		version := utils.RunCommand("--version")
-		version = strings.ReplaceAll(version, " "+shellName, "")
-		shell += version
 	}
-
-	// Clean unwanted info similar to Bash
-	cleanups := []struct {
-		pattern *regexp.Regexp
-		repl    string
-	}{
-		{regexp.MustCompile(`, version`), ""},
-		{regexp.MustCompile(`xonsh/`), "xonsh "},
-		{regexp.MustCompile(`options.*`), ""},
-		{regexp.MustCompile(`\([^)]*\)`), ""},
+	if parsed := programVersionPattern.FindString(version); parsed != "" {
+		display += " " + parsed
 	}
-
-	for _, c := range cleanups {
-		shell = c.pattern.ReplaceAllString(shell, c.repl)
-	}
-
-	return strings.TrimSpace(shell)
+	return display
 }

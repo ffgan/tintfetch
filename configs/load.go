@@ -3,10 +3,8 @@ package configs
 import (
 	"fmt"
 	"os"
-	"reflect"
-	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func LoadConfig(fileName string) (*Config, error) {
@@ -87,7 +85,7 @@ func DefaultConfig() Config {
 			QT:           utils.ON,
 		},
 		IPAddress: IPAddress{
-			PublicIPHost:     "http://ident.me",
+			PublicIPHost:     "https://ident.me",
 			PublicIPTimeout:  "2",
 			LocalIPInterface: "('auto')",
 		},
@@ -143,7 +141,7 @@ func DefaultConfig() Config {
 		},
 		ImageOptions: ImageOptions{
 			ImageLoop:       utils.OFF,
-			ThumbnailDir:    "${XDG_CACHE_HOME:-${HOME}/.cache}/thumbnails/neofetch",
+			ThumbnailDir:    "${XDG_CACHE_HOME:-${HOME}/.cache}/thumbnails/tintfetch",
 			CropMode:        "normal",
 			CropOffset:      "center",
 			ImageSize:       utils.AUTO,
@@ -186,78 +184,4 @@ func DefaultConfig() Config {
 			},
 		},
 	}
-}
-
-func ParseConfig(data string, config *Config) error {
-	lines := strings.Split(data, "\n")
-	real_lines := []string{}
-
-	// preprocess lines: remove comments and empty lines
-	for _, line := range lines {
-		if strings.HasPrefix(strings.TrimSpace(line), "#") || len(line) == 0 {
-			continue
-		}
-		real_lines = append(real_lines, line)
-	}
-
-	print_info_lines_start := -1
-	print_info_lines_end := -1
-
-	for i, line := range real_lines {
-		if line == "print_info() {" {
-			print_info_lines_start = i
-		}
-		if line == "}" {
-			print_info_lines_end = i
-		}
-	}
-
-	if print_info_lines_start == -1 {
-		return fmt.Errorf("invalid config format,cannot find print_info block's start")
-	}
-
-	if print_info_lines_end == -1 {
-		return fmt.Errorf("invalid config format,cannot find print_info block's end")
-	}
-
-	if config.InfoList == nil {
-		for i := print_info_lines_start + 1; i < print_info_lines_end; i++ {
-			var info_line_list []string
-			if strings.Contains(real_lines[i], "\"") {
-				var tmp []string
-				info_line_list = strings.Split(real_lines[i], "\"")
-				for _, item := range info_line_list {
-					item = strings.TrimSpace(item)
-					tmp = append(tmp, item)
-				}
-				info_line_list = tmp
-			} else {
-				info_line_list = strings.Split(real_lines[i], " ")
-			}
-			var tmp []string
-			for _, item := range info_line_list {
-				if item == "" || item == "info" {
-					continue
-				}
-				tmp = append(tmp, strings.ReplaceAll(item, "\"", ""))
-			}
-
-			config.InfoList = append(config.InfoList, tmp)
-		}
-	}
-
-	config_list := real_lines[print_info_lines_end+1:]
-
-	t := reflect.ValueOf(config)
-
-	for _, line := range config_list {
-		parts := strings.SplitN(line, "=", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-		_ = SetByGFTag(&t, key, value)
-	}
-	return nil
 }

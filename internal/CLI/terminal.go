@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 var (
@@ -52,7 +53,7 @@ func GetTerm(osname string) string {
 	if term == "" {
 		parent := os.Getppid()
 		for term == "" && parent > 1 {
-			name := utils.GetProcessName(string(parent))
+			name := utils.GetProcessName(strconv.Itoa(parent))
 			switch {
 			case strings.Contains(name, "gnome-terminal-"):
 				term = "gnome-terminal"

@@ -8,15 +8,15 @@ import (
 	"strconv"
 	"strings"
 
-	cli "github.com/ffgan/gf/internal/CLI"
-	"github.com/ffgan/gf/internal/utils"
+	cli "github.com/ffgan/tintfetch/internal/CLI"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetResolution(osName, machine string) string {
 	var resolution string
 
 	switch osName {
-	case cli.MacOS:
+	case cli.Darwin, cli.MacOSX, cli.MacOS:
 		resolution = getResolutionMac()
 	case cli.Iphone:
 		resolution = getResolutionIOS(machine)
@@ -38,13 +38,21 @@ func GetResolution(osName, machine string) string {
 
 // --- macOS ---
 func getResolutionMac() string {
-	tmp := "/tmp/neofetch_system_profiler_SPDisplaysDataType.xml"
 	out, err := utils.CommandOutput("system_profiler", "SPDisplaysDataType", "-xml")
 	if err != nil {
 		return ""
 	}
-	os.WriteFile(tmp, out, 0644)
+	file, err := os.CreateTemp("", "tintfetch-displays-*.xml")
+	if err != nil {
+		return ""
+	}
+	tmp := file.Name()
 	defer os.Remove(tmp)
+	_, writeErr := file.Write(out)
+	closeErr := file.Close()
+	if writeErr != nil || closeErr != nil {
+		return ""
+	}
 
 	var resList []string
 	for gpu := 0; gpu < 999; gpu++ {

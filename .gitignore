@@ -1,3 +1,11 @@
+/build/
 *.log
-main
-gf
+/main
+/gf
+/tintfetch
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/tintfetch/
+/debian/*.debhelper
+/debian/*.substvars

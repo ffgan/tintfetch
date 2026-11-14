@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"strings"
 
-	cli "github.com/ffgan/gf/internal/CLI"
-	"github.com/ffgan/gf/internal/utils"
+	cli "github.com/ffgan/tintfetch/internal/CLI"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetGPU(osName string) string {
@@ -19,7 +19,7 @@ func GetGPU(osName string) string {
 	case cli.Linux:
 		gpu = getLinuxGPU()
 
-	case cli.MacOSX, cli.MacOS:
+	case cli.Darwin, cli.MacOSX, cli.MacOS:
 		gpu = getMacGPU()
 
 	case cli.Iphone:

@@ -1,12 +1,10 @@
 package cli
 
 import (
-	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 type kernelconfig struct {
@@ -91,8 +89,7 @@ func getKernelRelease() string {
 func UName(command string) string {
 	out, err := utils.CommandOutput("uname", command)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to run uname %s: %v\n", command, err)
-		os.Exit(1)
+		return ""
 	}
 	return strings.TrimSpace(string(out))
 }

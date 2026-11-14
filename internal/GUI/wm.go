@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	cli "github.com/ffgan/gf/internal/CLI"
-	"github.com/ffgan/gf/internal/utils"
+	cli "github.com/ffgan/tintfetch/internal/CLI"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetWM(osName, kernelName string) string {
@@ -52,7 +52,7 @@ func GetWM(osName, kernelName string) string {
 	}
 
 	// --- X11 detection ---
-	if wm == "" && display != "" && osName != cli.MacOSX && osName != cli.MacOS && osName != cli.FreeMiNT {
+	if wm == "" && display != "" && osName != cli.Darwin && osName != cli.MacOSX && osName != cli.MacOS && osName != cli.FreeMiNT {
 		wm = utils.ScanProcesses(psFlags, []string{
 			"sowm", "catwm", "fvwm", "dwm", "2bwm", "monsterwm", "tinywm", "x11fs", "xmonad",
 		})
@@ -67,7 +67,7 @@ func GetWM(osName, kernelName string) string {
 	// --- macOS detection ---
 	if wm == "" {
 		switch osName {
-		case cli.MacOSX, cli.MacOS:
+		case cli.Darwin, cli.MacOSX, cli.MacOS:
 			psLine := utils.RunCommand("ps", "-e")
 			switch {
 			case strings.Contains(psLine, "chunkwm"):

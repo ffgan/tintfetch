@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ffgan/gf/configs"
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/configs"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetMemory(osName string, config *MemoryConfig) (*MemoryInfo, error) {
@@ -303,10 +303,11 @@ func formatMemory(usedKiB, totalKiB int64, percent int, config *MemoryConfig) st
 }
 
 func generateBar(used, total int64, config *MemoryConfig) string {
-	if total == 0 {
+	if total <= 0 || config.BarWidth <= 0 {
 		return ""
 	}
 
+	used = max(used, 0)
 	filled := int(float64(used) / float64(total) * float64(config.BarWidth))
 	if filled > config.BarWidth {
 		filled = config.BarWidth
@@ -345,14 +346,13 @@ func PrintMem(osName string, mem configs.Memory, bar configs.ProgressBar) string
 		ShowPercent:   ShowPercent,
 		DisplayMode:   bar.MemoryDisplay,
 		BarWidth:      BarLength,
-		BarCharFilled: bar.BarCharTotal,
-		BarCharEmpty:  bar.BarCharElapsed,
+		BarCharFilled: bar.BarCharElapsed,
+		BarCharEmpty:  bar.BarCharTotal,
 	}
 
 	info, err := GetMemory(osName, config)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error getting memory info: %v\n", err)
-		os.Exit(1)
+		return ""
 	}
 	return info.Formatted
 }

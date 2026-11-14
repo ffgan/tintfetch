@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetUptime(osName, uptimeShorthand string) string {

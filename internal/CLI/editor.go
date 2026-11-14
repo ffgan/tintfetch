@@ -1,12 +1,11 @@
 package cli
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetEditor(editorPathOpt, editorVersionOpt string) string {
@@ -66,19 +65,8 @@ func GetEditor(editorPathOpt, editorVersionOpt string) string {
 
 	editorV = strings.Replace(editorV, "Version: ", "", 1)
 
-	if strings.Contains(strings.ToLower(editorV), strings.ToLower(editorName)) {
-		editorName = ""
+	if version := programVersionPattern.FindString(editorV); version != "" {
+		return strings.TrimSpace(editor) + " " + version
 	}
-
-	editor = strings.TrimSpace(fmt.Sprintf("%s %s", editorName, editorV))
-
-	editor = strings.Replace(editor, ", version", "", 1)
-	if idx := strings.Index(editor, "options"); idx != -1 {
-		editor = editor[:idx]
-	}
-	if idx := strings.Index(editor, "("); idx != -1 {
-		editor = editor[:idx]
-	}
-
 	return strings.TrimSpace(editor)
 }

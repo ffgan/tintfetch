@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func getHostname() string {

@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+binary=${1:-build/tintfetch}
+stage=$(mktemp -d)
+trap 'rm -rf "$stage"' EXIT HUP INT TERM
+"$binary" --version
+"$binary" --print-config > "$stage/config.conf"
+"$binary" --config "$stage/config.conf" --plain > "$stage/plain"
+"$binary" --config "$stage/config.conf" --json > "$stage/info.json"
+python3 - "$stage" <<'PY'
+import json, pathlib, sys
+root = pathlib.Path(sys.argv[1])
+data = json.loads((root / 'info.json').read_text())
+assert isinstance(data['entries'], list)
+assert '\x1b' not in (root / 'plain').read_text()
+assert '\x1b' not in json.dumps(data)
+assert any(row['module'] == 'kernel' for row in data['entries'])
+PY
+if "$binary" --no-config --unknown-option > "$stage/out" 2> "$stage/err"; then
+    echo 'unknown option unexpectedly accepted' >&2
+    exit 1
+fi

@@ -29,151 +29,151 @@ type Config struct {
 }
 
 type Title struct {
-	TitleFqdn string `gf:"title_fqdn"`
+	TitleFqdn string `config:"title_fqdn"`
 }
 
 type Kernel struct {
-	KernelShorthand string `gf:"kernel_shorthand"`
+	KernelShorthand string `config:"kernel_shorthand"`
 }
 
 type Distro struct {
-	DistroShorthand string `gf:"distro_shorthand"`
-	OSArch          string `gf:"os_arch"`
+	DistroShorthand string `config:"distro_shorthand"`
+	OSArch          string `config:"os_arch"`
 }
 
 type Uptime struct {
-	UptimeShorthand string `gf:"uptime_shorthand"`
+	UptimeShorthand string `config:"uptime_shorthand"`
 }
 
 type Memory struct {
-	MemoryPercent string `gf:"memory_percent"`
-	MemoryUnit    string `gf:"memory_unit"`
-	MemPrecision  string `gf:"mem_precision"`
+	MemoryPercent string `config:"memory_percent"`
+	MemoryUnit    string `config:"memory_unit"`
+	MemPrecision  string `config:"mem_precision"`
 }
 
 type Packages struct {
-	PackageManagers string `gf:"package_managers"`
-	PackageSeparate string `gf:"package_separate"`
-	PackageMinimal  string `gf:"package_minimal"`
+	PackageManagers string `config:"package_managers"`
+	PackageSeparate string `config:"package_separate"`
+	PackageMinimal  string `config:"package_minimal"`
 }
 
 type Shell struct {
-	ShellPath    string `gf:"shell_path"`
-	ShellVersion string `gf:"shell_version"`
+	ShellPath    string `config:"shell_path"`
+	ShellVersion string `config:"shell_version"`
 }
 
 type Editor struct {
-	EditorPath    string `gf:"editor_path"`
-	EditorVersion string `gf:"editor_version"`
+	EditorPath    string `config:"editor_path"`
+	EditorVersion string `config:"editor_version"`
 }
 
 type CPU struct {
-	SpeedType      string `gf:"speed_type"`
-	SpeedShorthand string `gf:"speed_shorthand"`
-	CPUBrand       string `gf:"cpu_brand"`
-	CPUSpeed       string `gf:"cpu_speed"`
-	CPUCores       string `gf:"cpu_cores"`
-	CPUTemp        string `gf:"cpu_temp"`
+	SpeedType      string `config:"speed_type"`
+	SpeedShorthand string `config:"speed_shorthand"`
+	CPUBrand       string `config:"cpu_brand"`
+	CPUSpeed       string `config:"cpu_speed"`
+	CPUCores       string `config:"cpu_cores"`
+	CPUTemp        string `config:"cpu_temp"`
 }
 
 type GPU struct {
-	GPUBrand string `gf:"gpu_brand"`
-	GPUType  string `gf:"gpu_type"`
+	GPUBrand string `config:"gpu_brand"`
+	GPUType  string `config:"gpu_type"`
 }
 
 type Resolution struct {
-	RefreshRate string `gf:"refresh_rate"`
+	RefreshRate string `config:"refresh_rate"`
 }
 
 type GTK struct {
-	GTKShorthand string `gf:"gtk_shorthand"`
-	GTK2         string `gf:"gtk2"`
-	GTK3         string `gf:"gtk3"`
-	QT           string `gf:"qt"`
+	GTKShorthand string `config:"gtk_shorthand"`
+	GTK2         string `config:"gtk2"`
+	GTK3         string `config:"gtk3"`
+	QT           string `config:"qt"`
 }
 
 type IPAddress struct {
-	PublicIPHost     string `gf:"public_ip_host"`
-	PublicIPTimeout  string `gf:"public_ip_timeout"`
-	LocalIPInterface string `gf:"local_ip_interface"`
+	PublicIPHost     string `config:"public_ip_host"`
+	PublicIPTimeout  string `config:"public_ip_timeout"`
+	LocalIPInterface string `config:"local_ip_interface"`
 }
 
 type DE struct {
-	DeVersion string `gf:"de_version"`
+	DeVersion string `config:"de_version"`
 }
 
 type Disk struct {
-	DiskShow     string `gf:"disk_show"`
-	DiskSubtitle string `gf:"disk_subtitle"`
-	DiskPercent  string `gf:"disk_percent"`
+	DiskShow     string `config:"disk_show"`
+	DiskSubtitle string `config:"disk_subtitle"`
+	DiskPercent  string `config:"disk_percent"`
 }
 
 type Song struct {
-	MusicPlayer   string `gf:"music_player"`
-	SongFormat    string `gf:"song_format"`
-	SongShorthand string `gf:"song_shorthand"`
-	MPCArgs       string `gf:"mpc_args"`
+	MusicPlayer   string `config:"music_player"`
+	SongFormat    string `config:"song_format"`
+	SongShorthand string `config:"song_shorthand"`
+	MPCArgs       string `config:"mpc_args"`
 }
 
 type TextColor struct {
-	Colors string `gf:"colors"`
+	Colors string `config:"colors"`
 }
 
 type TextOptions struct {
-	Bold             string `gf:"bold"`
-	UnderlineEnabled string `gf:"underline_enabled"`
-	UnderlineChar    string `gf:"underline_char"`
-	Separator        string `gf:"separator"`
+	Bold             string `config:"bold"`
+	UnderlineEnabled string `config:"underline_enabled"`
+	UnderlineChar    string `config:"underline_char"`
+	Separator        string `config:"separator"`
 }
 
 type ColorBlocks struct {
-	BlockRange  string `gf:"block_range"`
-	ColorBlocks string `gf:"color_blocks"`
-	BlockWidth  string `gf:"block_width"`
-	BlockHeight string `gf:"block_height"`
-	ColOffset   string `gf:"col_offset"`
+	BlockRange  string `config:"block_range"`
+	ColorBlocks string `config:"color_blocks"`
+	BlockWidth  string `config:"block_width"`
+	BlockHeight string `config:"block_height"`
+	ColOffset   string `config:"col_offset"`
 }
 
 type ProgressBar struct {
-	BarCharElapsed  string `gf:"bar_char_elapsed"`
-	BarCharTotal    string `gf:"bar_char_total"`
-	BarBorder       string `gf:"bar_border"`
-	BarLength       string `gf:"bar_length"`
-	BarColorElapsed string `gf:"bar_color_elapsed"`
-	BarColorTotal   string `gf:"bar_color_total"`
-	MemoryDisplay   string `gf:"memory_display"`
-	BatteryDisplay  string `gf:"battery_display"`
-	DiskDisplay     string `gf:"disk_display"`
+	BarCharElapsed  string `config:"bar_char_elapsed"`
+	BarCharTotal    string `config:"bar_char_total"`
+	BarBorder       string `config:"bar_border"`
+	BarLength       string `config:"bar_length"`
+	BarColorElapsed string `config:"bar_color_elapsed"`
+	BarColorTotal   string `config:"bar_color_total"`
+	MemoryDisplay   string `config:"memory_display"`
+	BatteryDisplay  string `config:"battery_display"`
+	DiskDisplay     string `config:"disk_display"`
 }
 
 type BackendSettings struct {
-	ImageBackend string `gf:"image_backend"`
-	ImageSource  string `gf:"image_source"`
+	ImageBackend string `config:"image_backend"`
+	ImageSource  string `config:"image_source"`
 }
 
 type ASCIIOptions struct {
-	ASCIIDistro string `gf:"ascii_distro"`
-	ASCIIColors string `gf:"ascii_colors"`
-	ASCIIBold   string `gf:"ascii_bold"`
+	ASCIIDistro string `config:"ascii_distro"`
+	ASCIIColors string `config:"ascii_colors"`
+	ASCIIBold   string `config:"ascii_bold"`
 }
 
 type ImageOptions struct {
-	ImageLoop       string `gf:"image_loop"`
-	ThumbnailDir    string `gf:"thumbnail_dir"`
-	CropMode        string `gf:"crop_mode"`
-	CropOffset      string `gf:"crop_offset"`
-	ImageSize       string `gf:"image_size"`
-	CatimgSize      string `gf:"catimg_size"`
-	Gap             string `gf:"gap"`
-	Yoffset         string `gf:"yoffset"`
-	Xoffset         string `gf:"xoffset"`
-	BackgroundColor string `gf:"background_color"`
+	ImageLoop       string `config:"image_loop"`
+	ThumbnailDir    string `config:"thumbnail_dir"`
+	CropMode        string `config:"crop_mode"`
+	CropOffset      string `config:"crop_offset"`
+	ImageSize       string `config:"image_size"`
+	CatimgSize      string `config:"catimg_size"`
+	Gap             string `config:"gap"`
+	Yoffset         string `config:"yoffset"`
+	Xoffset         string `config:"xoffset"`
+	BackgroundColor string `config:"background_color"`
 }
 
 type MiscOptions struct {
-	Stdout string `gf:"stdout"`
+	Stdout string `config:"stdout"`
 }
 
 type PrintInfo struct {
-	InfoList [][]string `gf:"info_list"`
+	InfoList [][]string `config:"info_list"`
 }

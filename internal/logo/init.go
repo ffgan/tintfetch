@@ -1,11 +1,27 @@
 package logo
 
-import "github.com/armon/go-radix"
+import "strings"
 
-var r *radix.Tree
+// registry replaces the former radix dependency; longest-prefix lookup is sufficient
+// for this static collection of distribution names.
+type registry map[string]any
+
+func (r registry) Insert(key string, value any) { r[key] = value }
+func (r registry) LongestPrefix(key string) (string, any, bool) {
+	var best string
+	for candidate := range r {
+		if strings.HasPrefix(strings.ToLower(key), strings.ToLower(candidate)) && (len(candidate) > len(best) || len(candidate) == len(best) && candidate < best) {
+			best = candidate
+		}
+	}
+	value, ok := r[best]
+	return best, value, ok
+}
+
+var r registry
 
 func init() {
-	r = radix.New()
+	r = make(registry)
 
 	r.Insert("Adélie", DistroWithColor{
 		FileName: "adelie",

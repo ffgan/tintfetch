@@ -1,11 +1,9 @@
 package cli
 
 import (
-	"fmt"
-	"os"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetOS(kernelName, darwin_name string) string {
@@ -13,7 +11,7 @@ func GetOS(kernelName, darwin_name string) string {
 
 	switch {
 	case kernelName == Darwin:
-		// TODO: https://github.com/ffgan/hyfetch/blob/master/neofetch#L6384
+		osName = Darwin
 
 	case kernelName == SunOS:
 		out, err := utils.CommandOutput("uname", "-o")
@@ -53,7 +51,7 @@ func GetOS(kernelName, darwin_name string) string {
 	case strings.HasSuffix(kernelName, BSD) ||
 		kernelName == DragonFly ||
 		kernelName == Bitrig:
-		osName = BSD
+		osName = kernelName
 
 	case strings.HasPrefix(kernelName, CYGWIN) ||
 		strings.HasPrefix(kernelName, MSYS) ||
@@ -62,9 +60,7 @@ func GetOS(kernelName, darwin_name string) string {
 		osName = Windows
 
 	default:
-		fmt.Fprintf(os.Stderr, "Unknown OS detected: '%s', aborting...\n", kernelName)
-		fmt.Fprintln(os.Stderr, "Open an issue on GitHub to add support for your OS.")
-		os.Exit(1)
+		return kernelName
 	}
 
 	return osName

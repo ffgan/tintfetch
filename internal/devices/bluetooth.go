@@ -3,7 +3,7 @@ package dev
 import (
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetBluetooth() string {

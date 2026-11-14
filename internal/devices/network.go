@@ -10,15 +10,15 @@ import (
 	"strconv"
 	"strings"
 
-	cli "github.com/ffgan/gf/internal/CLI"
-	"github.com/ffgan/gf/internal/utils"
+	cli "github.com/ffgan/tintfetch/internal/CLI"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func GetNetwork(osName string) string {
 	if strings.Contains(osName, cli.Linux) {
 		return getNetworkLinux()
 	}
-	if strings.Contains(osName, cli.MacOSX) || strings.Contains(osName, cli.MacOS) {
+	if osName == cli.Darwin || strings.Contains(osName, cli.MacOSX) || strings.Contains(osName, cli.MacOS) {
 		return getNetworkMac()
 	}
 	return "Unknown OS"
@@ -82,8 +82,21 @@ func getNetworkMac() string {
 	var phyMode, linkSpeed string
 
 	if activeName == "Wi-Fi" {
-		tmp := "/tmp/neofetch_system_profiler_SPAirPortDataType.xml"
-		utils.RunCommand("system_profiler", "-detailLevel", "basic", "-xml", "SPAirPortDataType")
+		out, err := utils.CommandOutput("system_profiler", "-detailLevel", "basic", "-xml", "SPAirPortDataType")
+		if err != nil {
+			return ""
+		}
+		file, err := os.CreateTemp("", "tintfetch-network-*.xml")
+		if err != nil {
+			return ""
+		}
+		tmp := file.Name()
+		defer os.Remove(tmp)
+		_, writeErr := file.Write(out)
+		closeErr := file.Close()
+		if writeErr != nil || closeErr != nil {
+			return ""
+		}
 
 		phyMode = plistBuddyPrint(tmp, "0:_items:0:spairport_airport_interfaces:0:spairport_current_network_information:spairport_network_phymode")
 		linkSpeed = plistBuddyPrint(tmp, "0:_items:0:spairport_airport_interfaces:0:spairport_current_network_information:spairport_network_rate")

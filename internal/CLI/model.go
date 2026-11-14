@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ffgan/gf/internal/utils"
+	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 func cleanModelName(model string) string {
@@ -49,7 +49,7 @@ func GetModel(osName, kernelName, kernelMachine string) string {
 			model = utils.ReadFileTrim("/tmp/sysinfo/model")
 		}
 
-	case MacOSX, MacOS, RavynOS:
+	case Darwin, MacOSX, MacOS, RavynOS:
 		arch := utils.RunCommand("arch")
 		isHackintosh := false
 		if arch != "arm64" {
@@ -85,7 +85,7 @@ func GetModel(osName, kernelName, kernelMachine string) string {
 			model = kernelMachine
 		}
 
-	case BSD, MINIX:
+	case BSD, FreeBSD, OpenBSD, NetBSD, DragonFly, Bitrig, MINIX:
 		if kernelName == "FreeBSD" {
 			model = utils.RunCommand("kenv", "smbios.system.version")
 		} else {
