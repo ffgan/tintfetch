@@ -2,9 +2,8 @@ package gui
 
 import (
 	"os"
+	"runtime"
 	"strings"
-
-	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 type StyleContext struct {
@@ -22,7 +21,9 @@ func getStyle(ctx StyleContext) string {
 	var gtk2, gtk3, qt, kde string
 
 	display := os.Getenv("DISPLAY")
-	if display == "" {
+	if display == "" || runtime.GOOS == "windows" {
+		// Git Bash sets DISPLAY. GTK and Qt settings are not there,
+		// and probing them walks the process list.
 		return ""
 	}
 
@@ -40,7 +41,7 @@ func getStyle(ctx StyleContext) string {
 		gtk3 = getGSettings("org.mate.interface", ctx.GSettings)
 		gtk2 = gtk3
 	case strings.Contains(de, "Xfce"):
-		gtk2 = utils.RunCommand("xfconf-query", "-c", "xsettings", "-p", ctx.XfConf)
+		gtk2 = readXfconf(ctx.XfConf)
 	case strings.Contains(de, "LXQt"):
 		qt = readLXQtTheme(ctx.LxQt)
 	case strings.Contains(de, "Fly"):

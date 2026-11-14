@@ -10,7 +10,7 @@ Reference files:
 - https://github.com/ffgan/hyfetch/blob/2252fc36e76eebc42030c383784f63f9489f5630/neofetch
 - https://github.com/ffgan/hyfetch/blob/2252fc36e76eebc42030c383784f63f9489f5630/LICENSE.md
 
-All 384 files in `assets/`, with only leading/trailing newlines removed for
+The original 384 files in `assets/`, with only leading/trailing newlines removed for
 comparison, occur verbatim in the reference script. The script includes Dylan
 Araps's MIT notice (2015–2021); the reference repository's MIT license extends
 the year range to 2015–2023. Both the project license and third-party notices
@@ -36,3 +36,10 @@ may require further history or individual artwork attribution before acceptance.
 Compiled executables contain the Go runtime and standard library. Their BSD
 redistribution notice is included in THIRD_PARTY_NOTICES and installed with
 binary packages; the Tintfetch application source remains MIT licensed.
+
+The merge of origin/master at de3e5aa added 17 further artwork files. They
+are inherited from the remote implementation and do not match the pinned
+reference verbatim. Their checksums are recorded, and the paths are listed in
+assets-pending-provenance.txt. Their upstream attribution must be reviewed
+before a formal distribution submission. The source audit script distinguishes
+these pending files from the 384 verified files instead of certifying them.

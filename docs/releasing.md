@@ -1,59 +1,48 @@
 # Release and distribution preparation
 
-Current changes are development work. Do not tag or advertise a stable release
-as full upstream parity. The repository URL remains `ffgan/gf`; coordinate its
-rename to `ffgan/tintfetch` before publishing the new Go module path. Check
-repository, package and executable name availability with Debian/Fedora
-maintainers before submission. No trademark or package-name clearance is implied.
+This merge retains the native features and release history through gf v0.3.6 and
+starts Tintfetch development at 0.3.7-dev. The GitHub remote remains `ffgan/gf`;
+coordinate its rename before publishing the `github.com/ffgan/tintfetch` Go module
+path. Existing release binaries are still named gf; newly generated archives use
+tintfetch. No release tag or distribution submission is created by this merge.
 
-Before publishing:
+Before publication:
 
-1. Resolve the remaining compatibility milestones or explicitly scope the release
-   as a native subset with optional upstream adapters; update documentation accordingly.
-2. Review license/provenance, `THIRD_PARTY_NOTICES` and `debian/copyright`.
-   Re-run `scripts/check-provenance.py` against the pinned source when changing assets.
-3. Run `make check`, `go test -race ./...`, smoke and reproducibility checks.
-   Run the CI matrix and inspect actual results, not just workflow presence.
-4. Choose a release version; update Debian/RPM versions, changelog and the binary
-   default together. The supplied recipes use development versions intentionally.
-5. Build source archives with `make dist VERSION=... SOURCE_DATE_EPOCH=...` using
-   the release commit timestamp. Build from a clean, reviewed checkout; the archive
-   includes the working tree, so do not keep secrets or unrelated files there.
-6. Verify install/uninstall using DESTDIR; compare the source archive and binary
-   licenses/docs. Publish checksums and release notes through the normal maintainer
-   review process. Publication is not automatic in this repository.
+1. Review pending artwork provenance in assets-pending-provenance.txt and the
+   native HyFetch-derived data/code notices. Preserve LICENSE and
+   THIRD_PARTY_NOTICES in all archives and binary packages.
+2. Run `make check`, `go test -race ./...`, scripts/smoke.sh and
+   scripts/reproducible.sh. Inspect actual cross-platform CI/e2e results.
+3. Verify package/executable name availability and maintainer contact information.
+   The current noreply maintainer address is a repository identity only.
+4. Update the binary, release-script, DEB and RPM versions together. Build source
+   archives from a clean checkout using `make dist VERSION=...` and the release
+   timestamp as SOURCE_DATE_EPOCH. The archive includes the working tree.
+5. Validate installation/removal, metadata, notices, debuginfo and checksums.
+   Publish through maintainer review; presence of packaging is not archive approval.
 
-## Debian and Ubuntu
+Go 1.26+ is required by the integrated upstream implementation. Debian/Ubuntu
+build roots without that compiler are unsupported. Root debian/ contains a
+source-package recipe: run `dpkg-buildpackage -us -uc -b`, inspect Lintian, and
+use sbuild/pbuilder before seeking sponsorship. For source packages, provide an
+appropriately named original tarball. dwz is skipped for Go's compressed DWARF;
+normal stripping and debug-package generation remain enabled.
 
-The root `debian/` directory is a development source-package recipe. Build with
-`dpkg-buildpackage -us -uc -b` in a clean Debian/Ubuntu chroot containing Go 1.24+
-and debhelper 13+. For source packages, first create the corresponding original
-source tarball with Debian's version naming. Use `sbuild`/`pbuilder`, inspect
-`lintian`, install/remove the package in a disposable environment and then seek
-sponsorship/review. Older Ubuntu releases without a suitable Go compiler are
-not supported by the current recipe. Set the correct maintainer/contact data
-before submission; the current noreply address is a repository identity only.
-
-## Fedora
-
-Use the current Fedora Go packaging guidelines and package review process; the
-spec is an initial standalone application recipe, not an approved Fedora package.
-The Go module has no external dependencies to unbundle. In a clean Fedora build
-root with Go 1.24+, make and RPM development tools:
+For Fedora, use a clean Go 1.26+ build root with make, gcc, glibc-devel and RPM
+build tools:
 
 ```sh
-make dist VERSION=0.1.0
+make dist VERSION=0.3.7
 rpmbuild -ba packaging/rpm/tintfetch.spec --define "_sourcedir $PWD/build"
 ```
 
-`Source0` describes the intended release-tag archive. For development, the command
-above supplies a local archive; that release tag has not been created. Use `mock`
-and `rpmlint`, review generated dependencies and debuginfo, and validate optional
-upstream engine availability. Update architecture exclusions only from concrete
-build failures. Do not assume local RPM build success implies policy acceptance.
+The spec is an initial application recipe, not an approved Fedora package.
+Source0 refers to the intended future release tag; local development supplies the
+archive explicitly. Run mock/rpmlint and complete Fedora package review.
 
-Both recipes build PIE executables with RELRO using the system C toolchain,
-retain build IDs/debug information, and stage into `/usr`, ship notices and a manual, avoid downloading
-modules/toolchains during build, and install examples under documentation rather
-than creating mutable user configuration. CI validates Debian unstable and current
-Fedora; it does not establish support for every Debian/Ubuntu/Fedora release.
+Both recipes build PIE/RELRO executables with system C linking, retain build IDs
+and debug information, stage into /usr, install a manual and copyright notices,
+and keep examples in documentation. There are no third-party Go modules and
+no module/toolchain downloads during builds. The retained release script also
+supports CGO-disabled builds where the target allows them. Current packaging CI
+uses Debian unstable and Fedora; it does not promise support for all older releases.

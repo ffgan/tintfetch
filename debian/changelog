@@ -1,4 +1,4 @@
-tintfetch (0.1.0~dev-1) unstable; urgency=medium
+tintfetch (0.3.7~dev-1) unstable; urgency=medium
 
   * Initial development packaging; not submitted to the Debian archive.
 

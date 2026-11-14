@@ -5,71 +5,72 @@ tintfetch \- display system information and colorful distribution artwork
 .B tintfetch
 .RI [ options ]
 .SH DESCRIPTION
-Tintfetch is a Go system information utility. The native engine displays
-available information and skips unavailable optional probes. External commands
-have a bounded execution time. Output redirected to a file is plain text by default.
+Tintfetch, formerly gf, is a native Go system information utility with
+HyFetch color profiles and fastfetch-style information modules.
+Unavailable optional information is omitted.
 .SH OPTIONS
 .TP
-.BR --help
-Show all registered options. Some options require an upstream engine.
+.B --help
+Show the complete native and HyFetch-compatible option list.
 .TP
-.BR --version
-Print the build version without probing hardware or reading configuration.
+.B --version
+Print the version.
 .TP
-.BR --config " PATH"
-Read the selected configuration. Explicit options override configuration values.
+.B --config PATH
+Select an info configuration file; command options override its settings.
 .TP
-.BR --no-config
-Ignore user and system configuration. No configuration is created automatically.
+.BR --no_config ", " --no-config
+Ignore info configuration files. HyFetch JSON configuration is independent.
 .TP
-.BR --print-config
-Print the default declarative configuration.
+.BR --print_config ", " --print-config
+Print the default info configuration.
 .TP
-.BR --shell-config
-Execute the explicitly selected configuration with Bash. Use only with trusted
-files. This grants the configuration the same access as the invoking user.
+.BR --stdout ", " --plain
+Print plain text without artwork or ANSI styling.
 .TP
-.BR --plain
-Disable artwork and ANSI styling.
+.B --json
+Print an object containing version and result. Result rows have key,
+optional label, and value string fields.
 .TP
-.BR --json
-Print an object containing version and entries. Each entry has label, module,
-and value string fields. Artwork and ANSI styling are excluded.
+.BR --list_modules
+List information modules.
 .TP
-.BR --preset " NAME"
-Apply native color stripes to ASCII artwork.
+.B --structure MODULES
+Choose a colon-separated module list, or all. Some modules run commands or
+make network requests when explicitly selected.
 .TP
-.BR --list-presets
-List native color presets.
+.BR -p ", " --preset " NAME"
+Choose a native HyFetch color preset.
 .TP
-.BR --engine " native|neofetch|hyfetch"
-Select the built-in engine or an installed upstream program. Upstream arguments
-are forwarded verbatim, apart from the engine selector. The neofetch engine
-prefers neowofetch when available. Upstream engines use their own configuration
-and may execute shell code according to their own rules.
+.B -c
+Interactively configure HyFetch color options.
+.TP
+.B -C PATH
+Select a HyFetch JSON configuration.
+.TP
+.B --shell-config
+Execute a trusted Bash configuration selected with an explicit --config PATH.
+This grants the file the user's permissions. Only info calls are collected
+from its print_info function. Ordinary info configuration is not sourced.
+.TP
+.B --source PATH
+Select artwork. Image rendering uses optional external tools when installed.
 .SH FILES
 .TP
 .I $XDG_CONFIG_HOME/tintfetch/config.conf
-User configuration. When XDG_CONFIG_HOME is unset, the operating system's user
-configuration directory is used (normally ~/.config on Linux).
+Native user configuration; the OS user config directory is used otherwise.
 .TP
 .I /etc/tintfetch/config.conf
-System fallback when the user configuration does not exist.
-.SH ENVIRONMENT
+System configuration. Legacy gf/Neofetch paths remain fallbacks.
 .TP
-.B NO_COLOR
-Any nonempty value disables native ANSI color and artwork.
-.TP
-.B TERM
-The value dumb disables automatic styling.
-.SH EXIT STATUS
-0 for success, 1 for a runtime error, 2 for invalid native arguments or configuration.
-External engines preserve positive upstream exit statuses.
+.I ~/.config/hyfetch.json
+HyFetch-compatible color configuration.
 .SH NOTES
-The native engine does not implement all Neofetch or HyFetch behavior. See the
-installed compatibility document for supported options and platform limitations.
+Some image compatibility options remain placeholders. Consult the installed
+compatibility document and --help for the implemented behavior.
 .SH AUTHORS
 Tintfetch contributors; derived in part from Neofetch and HyFetch.
 .SH SEE ALSO
 .BR neofetch (1),
-.BR hyfetch (1)
+.BR hyfetch (1),
+.BR fastfetch (1)

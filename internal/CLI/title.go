@@ -39,6 +39,9 @@ func getTitle(config TitleConfig) (*TitleInfo, error) {
 			}
 		}
 	}
+	if i := strings.LastIndex(username, `\`); i >= 0 {
+		username = username[i+1:]
+	}
 
 	// Get hostname
 	var hostname string
@@ -102,7 +105,7 @@ func getTitle(config TitleConfig) (*TitleInfo, error) {
 // func main() {
 // 	// Example usage
 // 	config := TitleConfig{
-// 		TitleFQDN:  fqdn,
+// 		TitleFQDN:  false,
 // 		TitleColor: "\033[1;34m", // Blue
 // 		AtColor:    "\033[1;32m", // Green
 // 		Bold:       "\033[1m",    // Bold
@@ -122,7 +125,7 @@ func getTitle(config TitleConfig) (*TitleInfo, error) {
 
 // func GetTitle() string {
 // 	config := TitleConfig{
-// 		TitleFQDN:  fqdn,
+// 		TitleFQDN:  false,
 // 		TitleColor: "\033[1;34m", // Blue
 // 		AtColor:    "\033[1;32m", // Green
 // 		Bold:       "\033[1m",    // Bold
@@ -141,11 +144,9 @@ func getTitle(config TitleConfig) (*TitleInfo, error) {
 // 	return fmt.Sprintf("%s\033[0m", info.Title)
 // }
 
-func GetTitle() (*TitleInfo, error) { return GetTitleFQDN(false) }
-
-func GetTitleFQDN(fqdn bool) (*TitleInfo, error) {
+func GetTitle() (*TitleInfo, error) {
 	config := TitleConfig{
-		TitleFQDN:  fqdn,
+		TitleFQDN:  false,
 		TitleColor: "\033[1;34m", // Blue
 		AtColor:    "\033[1;32m", // Green
 		Bold:       "\033[1m",    // Bold

@@ -1,0 +1,17 @@
+assets/AOSC_Retro
+assets/Armada
+assets/Codex
+assets/Fiwix
+assets/HarmonyOS
+assets/Imaginary
+assets/Keenetic
+assets/MidOS
+assets/MidOS_old
+assets/NixOwOS
+assets/OpenSolaris
+assets/QNX
+assets/Tuxedo
+assets/Vylen
+assets/Zirconium
+assets/void_old
+assets/vylen_small

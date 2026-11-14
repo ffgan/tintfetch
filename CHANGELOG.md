@@ -1,15 +1,18 @@
 # Changelog
 
-## Unreleased
+## 0.3.7 — Unreleased
 
-- Rename gf to Tintfetch; establish separate command and configuration namespaces.
-- Add native declarative configuration parsing, explicit trusted Bash configuration,
-  configuration precedence, JSON/plain output and six color presets.
-- Replace go-radix with an in-tree prefix lookup; support offline builds.
-- Bound optional subprocess execution, skip unavailable CPU/memory probes and
-  replace predictable macOS temporary filenames.
-- Add explicit adapters for separately installed HyFetch/Neofetch engines.
-- Restore upstream MIT attribution and verify the 384 embedded artwork files.
-- Add staged installation, man page, development DEB/RPM recipes, CI and regression tests.
+- Rename gf to Tintfetch, including binary/archive names, module path and native
+  configuration namespace; retain legacy gf/Neofetch config fallbacks.
+- Preserve native HyFetch coloring/configuration, fastfetch-style modules, platform
+  fixes, full release matrix and end-to-end tests merged through de3e5aa (gf v0.3.6).
+- Add explicit trusted Bash configuration and clearer plain/config CLI aliases.
+- Replace go-radix with an in-tree prefix registry; retain offline Go builds.
+- Bound subprocess pipe waits and replace predictable macOS temporary files.
+- Restore upstream/runtime license notices; verify 384 original artwork files and
+  record 17 inherited artwork files requiring further provenance review.
+- Add staged installation, manual, contribution/security docs and DEB/RPM recipes
+  with package CI, PIE/RELRO and debug metadata.
 
-Full native upstream parity and distribution acceptance remain future milestones.
+Distribution acceptance and complete upstream image-protocol parity remain
+future milestones. No release tag is created by this preparation work.

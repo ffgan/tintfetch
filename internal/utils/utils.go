@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -58,6 +57,9 @@ func PathExists(path string) bool {
 }
 
 func GetParentPID(pid int) int {
+	if p, ok := parentPIDFast(pid); ok {
+		return p
+	}
 	out, err := CommandOutput("ps", "-o", "ppid=", "-p", fmt.Sprint(pid))
 	if err != nil {
 		return 0
@@ -72,6 +74,9 @@ func GetParentPID(pid int) int {
 }
 
 func GetProcessName(pid string) string {
+	if name, ok := processNameFast(pid); ok {
+		return name
+	}
 	out, err := CommandOutput("ps", "-p", pid, "-o", "comm=")
 	if err != nil {
 		return ""
@@ -79,12 +84,49 @@ func GetProcessName(pid string) string {
 	return strings.TrimSpace(string(out))
 }
 
+// ProcessNames returns the comm of every process. On Linux this is one
+// pass over /proc, shared by every module that used to spawn `ps`.
+func ProcessNames() ([]string, bool) {
+	return processNamesFast()
+}
+
 func ScanProcesses(psFlags []string, names []string) string {
-	args := append([]string{}, psFlags...)
-	out := RunCommand("ps", args...)
+	if comms, ok := processNamesFast(); ok {
+		running := make(map[string]struct{}, len(comms))
+		for _, c := range comms {
+			running[c] = struct{}{}
+		}
+		for _, n := range names {
+			if _, found := running[n]; found {
+				return n
+			}
+			if len(n) > 15 {
+				if _, found := running[n[:15]]; found {
+					return n
+				}
+			}
+		}
+		return ""
+	}
+	out := RunCommand("ps", "-e", "-o", "comm=")
+	if strings.TrimSpace(out) == "" && len(psFlags) > 0 {
+		out = RunCommand("ps", psFlags...)
+	}
+	found := map[string]bool{}
+	for _, line := range strings.Split(out, "\n") {
+		line = strings.TrimSpace(line)
+		if line != "" {
+			found[line] = true
+			if fields := strings.Fields(line); len(fields) > 0 {
+				found[fields[len(fields)-1]] = true
+			}
+		}
+	}
 	for _, n := range names {
-		re := regexp.MustCompile(fmt.Sprintf(`(?m)^%s$`, regexp.QuoteMeta(n)))
-		if re.FindString(out) != "" {
+		if found[n] {
+			return n
+		}
+		if len(n) > 15 && found[n[:15]] {
 			return n
 		}
 	}

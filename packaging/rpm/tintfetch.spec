@@ -1,13 +1,13 @@
 %undefine _debugsource_packages
 
 Name:           tintfetch
-Version:        0.1.0
+Version:        0.3.7
 Release:        0.1.dev%{?dist}
 Summary:        System information with colorful distribution artwork
 License:        MIT AND BSD-3-Clause
 URL:            https://github.com/ffgan/gf
 Source0:        %{url}/archive/refs/tags/v%{version}/%{name}-%{version}.tar.gz
-BuildRequires:  golang >= 1.24
+BuildRequires:  golang >= 1.26
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  glibc-devel
@@ -17,8 +17,8 @@ Suggests:       pciutils
 
 %description
 Tintfetch displays operating system, hardware and desktop information using
-a native Go engine. Optional installed upstream engines provide additional
-Neofetch and HyFetch compatibility.
+a native Go engine with HyFetch color profiles and fastfetch-style modules.
+Optional installed external applications provide additional rendering backends.
 
 %prep
 %autosetup
@@ -46,5 +46,5 @@ export GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off
 %{_mandir}/man1/%{name}.1*
 
 %changelog
-* Sun Nov 15 2026 ffgan <ffgan@users.noreply.github.com> - 0.1.0-0.1.dev
+* Sun Nov 15 2026 ffgan <ffgan@users.noreply.github.com> - 0.3.7-0.1.dev
 - Initial development packaging, not submitted for Fedora review

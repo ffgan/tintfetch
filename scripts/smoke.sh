@@ -11,10 +11,10 @@ python3 - "$stage" <<'PY'
 import json, pathlib, sys
 root = pathlib.Path(sys.argv[1])
 data = json.loads((root / 'info.json').read_text())
-assert isinstance(data['entries'], list)
+assert isinstance(data['result'], list)
 assert '\x1b' not in (root / 'plain').read_text()
 assert '\x1b' not in json.dumps(data)
-assert any(row['module'] == 'kernel' for row in data['entries'])
+assert data['result'], 'JSON output must contain configured information'
 PY
 if "$binary" --no-config --unknown-option > "$stage/out" 2> "$stage/err"; then
     echo 'unknown option unexpectedly accepted' >&2

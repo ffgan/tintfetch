@@ -1,7 +1,10 @@
 package cli
 
 import (
+	"fmt"
+	"os"
 	"regexp"
+	"runtime"
 	"strings"
 
 	"github.com/ffgan/tintfetch/internal/utils"
@@ -39,14 +42,11 @@ func getKernel(kc kernelconfig) string {
 		return getKernelRelease()
 
 	case Windows:
-		out, _ := utils.CommandOutput("wmic", "os", "get", "Version")
-		// remove "Version" header and trim
-		lines := strings.Split(strings.TrimSpace(string(out)), "\n")
-		if len(lines) > 1 {
-			kernel = strings.TrimSpace(lines[1])
+		ver := windowsKernelVersion(windowsCurrentVersion())
+		if ver == "" || kc.kernelShorthand == "tiny" {
+			return ver
 		}
-
-		return kernel
+		return "WIN32_NT " + ver
 
 	case Solaris:
 		ver := getKernelRelease()
@@ -70,13 +70,16 @@ func getKernel(kc kernelconfig) string {
 		kernel = kc.kernelName + " " + kc.kernelVersion
 	}
 
-	// Hide kernel info if identical to distro
-	distro, _ := GetDistro(kc.osName, kc.osArch, kc.KernelMachine, kc.distroShorthand, kc.ascii_distro)
-	if matched, _ := regexp.MatchString(`BSD|MINIX`, kc.osName); matched && strings.Contains(distro, kc.kernelName) {
-		if kc.distroShorthand == utils.ON || kc.distroShorthand == "tiny" {
-			kernel = kc.kernelVersion
-		} else {
-			kernel = ""
+	// Hide kernel info if identical to distro. Only BSD/MINIX need another
+	// distro lookup; every other OS would just re-read os-release.
+	if matched, _ := regexp.MatchString(`BSD|MINIX`, kc.osName); matched {
+		distro, _ := GetDistro(kc.osName, kc.osArch, kc.KernelMachine, kc.distroShorthand, kc.ascii_distro)
+		if strings.Contains(distro, kc.kernelName) {
+			if kc.distroShorthand == utils.ON || kc.distroShorthand == "tiny" {
+				kernel = kc.kernelVersion
+			} else {
+				kernel = ""
+			}
 		}
 	}
 	return kernel
@@ -87,9 +90,17 @@ func getKernelRelease() string {
 }
 
 func UName(command string) string {
+	if s, ok := unameFast(command); ok {
+		return s
+	}
 	out, err := utils.CommandOutput("uname", command)
 	if err != nil {
-		return ""
+		// Windows PowerShell has no uname. Missing it must not abort startup.
+		if runtime.GOOS == "windows" {
+			return ""
+		}
+		fmt.Fprintf(os.Stderr, "Failed to run uname %s: %v\n", command, err)
+		os.Exit(1)
 	}
 	return strings.TrimSpace(string(out))
 }

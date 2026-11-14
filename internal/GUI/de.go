@@ -4,50 +4,66 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"sync"
 
 	cli "github.com/ffgan/tintfetch/internal/CLI"
 	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 var (
-	deRun     bool
-	de        string
-	deVersion string
-	wmRun     bool
-	wm        string
+	deOnce sync.Once
+	de     string
+	wmOnce sync.Once
+	wm     string
+
+	desktopOnce   sync.Once
+	desktopCached string
 )
 
 func detectDesktopEnvironment() string {
-	// 优先使用 XDG_CURRENT_DESKTOP
-	if de := os.Getenv("XDG_CURRENT_DESKTOP"); de != "" {
-		return de
-	}
-	// Fallback: 检查进程名
-	out := utils.RunCommand("ps", "-e")
-	switch {
-	case strings.Contains(out, "plasmashell"):
-		return "KDE"
-	case strings.Contains(out, "gnome-shell"):
-		return "Gnome"
-	case strings.Contains(out, "cinnamon"):
-		return "Cinnamon"
-	case strings.Contains(out, "xfce"):
-		return "Xfce"
-	case strings.Contains(out, "lxqt"):
-		return "LXQt"
-	}
-	return "Unknown"
+	desktopOnce.Do(func() {
+		if current := os.Getenv("XDG_CURRENT_DESKTOP"); current != "" {
+			desktopCached = current
+			return
+		}
+		// One /proc walk instead of `ps -e`. Theme, icons, font and cursor
+		// all ask for this, and each used to list every process.
+		var blob string
+		if names, ok := utils.ProcessNames(); ok {
+			blob = strings.Join(names, "\n")
+		} else {
+			blob = utils.RunCommand("ps", "-e")
+		}
+		switch {
+		case strings.Contains(blob, "plasmashell"):
+			desktopCached = "KDE"
+		case strings.Contains(blob, "gnome-shell"):
+			desktopCached = "Gnome"
+		case strings.Contains(blob, "cinnamon"):
+			desktopCached = "Cinnamon"
+		case strings.Contains(blob, "xfce"):
+			desktopCached = "Xfce"
+		case strings.Contains(blob, "lxqt"):
+			desktopCached = "LXQt"
+		default:
+			desktopCached = "Unknown"
+		}
+	})
+	return desktopCached
 }
 
-func GetDE(osName, distro, kernel_name string) string {
-	if deRun {
-		return de
-	}
-	deRun = true
+func GetDE(osName, distro, kernel_name, showVersion string) string {
+	deOnce.Do(func() {
+		de = detectDE(osName, distro, kernel_name, showVersion)
+	})
+	return de
+}
 
+func detectDE(osName, distro, kernel_name, showVersion string) string {
 	switch osName {
-	case cli.Darwin, cli.MacOSX, cli.MacOS:
+	case cli.MacOSX, cli.MacOS, cli.Darwin:
 		de = "Aqua"
 
 	case cli.RavynOS:
@@ -83,8 +99,25 @@ func GetDE(osName, distro, kernel_name string) string {
 		}
 
 	default:
-		if !wmRun {
-			GetWM(osName, kernel_name)
+		procs := ""
+		if names, ok := utils.ProcessNames(); ok {
+			procs = strings.Join(names, "\n")
+		} else {
+			procs = utils.RunCommand("ps", "-e", "-o", "comm=")
+		}
+		switch {
+		case strings.Contains(procs, "xfce4-session"):
+			de = "Xfce"
+		case strings.Contains(procs, "gnome-shell"):
+			de = "GNOME"
+		case strings.Contains(procs, "plasmashell"):
+			de = "KDE"
+		case strings.Contains(procs, "cinnamon"):
+			de = "Cinnamon"
+		case strings.Contains(procs, "mate-session"):
+			de = "MATE"
+		case strings.Contains(procs, "lxqt-session"):
+			de = "LXQt"
 		}
 
 		desktopSession := os.Getenv("DESKTOP_SESSION")
@@ -119,8 +152,8 @@ func GetDE(osName, distro, kernel_name string) string {
 		}
 
 		// Remove DE if it's the same as WM
-		wm := GetWM(osName, kernel_name)
-		if de == wm {
+		wmName := GetWM(osName, kernel_name)
+		if de == wmName {
 			de = ""
 			return de
 		}
@@ -164,8 +197,9 @@ func GetDE(osName, distro, kernel_name string) string {
 	}
 
 	// Add version info if available
-	if deVersion == utils.ON && de != "" {
+	if showVersion == utils.ON && de != "" {
 		deVer, kfVer, qtVer := getDEVersion(de)
+		deVer = shortVersion(deVer)
 		if deVer != "" {
 			if strings.HasPrefix(de, "Plasma") {
 				de = fmt.Sprintf("%s %s [KF %s] [Qt %s]", de, deVer, kfVer, qtVer)
@@ -175,12 +209,29 @@ func GetDE(osName, distro, kernel_name string) string {
 		}
 	}
 
-	// Add session type (X11 / Wayland)
-	if st := os.Getenv("XDG_SESSION_TYPE"); st != "" {
-		de += fmt.Sprintf(" (%s)", st)
+	if osName != cli.Windows && de != "" && !strings.Contains(de, "(") {
+		switch {
+		case os.Getenv("WAYLAND_DISPLAY") != "":
+			de += " (Wayland)"
+		case os.Getenv("DISPLAY") != "" && os.Getenv("DISPLAY") != "wayland":
+			if os.Getenv("XDG_SESSION_TYPE") != "tty" {
+				de += " (X11)"
+			}
+		}
 	}
 
 	return de
+}
+
+func shortVersion(s string) string {
+	s = strings.TrimSpace(strings.Split(s, "\n")[0])
+	if s == "" {
+		return ""
+	}
+	if m := regexp.MustCompile(`\d+\.\d+(?:\.\d+)?`).FindString(s); m != "" {
+		return m
+	}
+	return s
 }
 
 func getDEVersion(name string) (string, string, string) {

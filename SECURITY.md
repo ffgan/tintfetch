@@ -13,3 +13,8 @@ Native declarative configuration is parsed as data. `--shell-config` explicitly
 executes trusted Bash code with the invoking user's permissions. External
 engines retain their own execution and configuration behavior. Public-IP lookup
 is optional and contacts the URL explicitly configured for that module.
+
+The explicitly selected command module executes its configured shell command;
+weather/public-IP modules can make network requests. Review shared configuration
+before enabling these modules. Native HyFetch code is bundled, while optional
+external rendering backends retain their own security/configuration behavior.

@@ -1,17 +1,24 @@
 package cmd
 
 import (
-	"runtime"
+	"fmt"
+	"os"
+	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/ffgan/tintfetch/configs"
 	cli "github.com/ffgan/tintfetch/internal/CLI"
 	gui "github.com/ffgan/tintfetch/internal/GUI"
 	dev "github.com/ffgan/tintfetch/internal/devices"
+	"github.com/ffgan/tintfetch/internal/logo"
 	"github.com/ffgan/tintfetch/internal/utils"
 )
 
 type hardware struct {
+	leftMax   int
+	cache_dir string
+
 	KernelName     string
 	kernel_version string
 	KernelMachine  string
@@ -47,17 +54,44 @@ type hardware struct {
 
 	cpu string
 	gpu string
+	npu string
 
 	memory string
+	swap   string
 
 	network string
 
 	bluetooth string
 
+	disk          string
+	battery       string
+	local_ip      string
+	public_ip     string
+	users         string
+	locale        string
+	gpu_driver    string
+	song          string
+	java_ver      string
+	python_ver    string
+	node_ver      string
+	term_size     string
+	window_size   string
+	power_adapter string
+
+	plain    bool
+	verbose  bool
+	disabled map[string]bool
+	extraMu  sync.Mutex
+	extra    map[string]string
+
 	resolution string
 
 	term      string
 	term_font string
+	font      string
+
+	ascii_bold string
+	bold       string
 
 	underline string
 	theme     string
@@ -83,14 +117,22 @@ func (h *hardware) Get_model() {
 	h.model = cli.GetModel(h.os, h.KernelName, h.KernelMachine)
 }
 func (h *hardware) Get_title() {
-	title, err := cli.GetTitleFQDN(h.TitleFqdn == utils.ON)
-	if err != nil {
+	title, err := cli.GetTitle()
+	if err != nil || title == nil {
 		return
 	}
 	h.user = title.User
 	h.hostname = title.Hostname
-	h.title = title.Title
 	h.length = title.Length
+	if h.plainMode() {
+		h.title = title.User + "@" + title.Hostname
+		return
+	}
+	bold := ""
+	if h.Bold != utils.OFF {
+		bold = "\033[1m"
+	}
+	h.title = logo.TitleColor() + bold + title.User + logo.AtColor() + "@" + logo.TitleColor() + bold + title.Hostname + logo.ResetCode()
 }
 
 func (h *hardware) Get_kernel() {
@@ -102,7 +144,11 @@ func (h *hardware) Get_uptime() {
 }
 
 func (h *hardware) Get_packages() {
-	h.packages = cli.DetectPackagesWithOptions(h.os, h.Packages)
+	h.packages = cli.DetectPackages(h.os, cli.PackageConfig{
+		Managers: h.PackageManagers,
+		Separate: h.PackageSeparate != utils.OFF,
+		Minimal:  h.PackageMinimal == utils.ON,
+	})
 }
 
 func (h *hardware) Get_shell() {
@@ -114,7 +160,7 @@ func (h *hardware) Get_editor() {
 }
 
 func (h *hardware) Get_de() {
-	h.de = gui.GetDE(h.os, h.distro, h.KernelName)
+	h.de = gui.GetDE(h.os, h.distro, h.KernelName, h.DeVersion)
 }
 
 func (h *hardware) Get_wm() {
@@ -122,23 +168,34 @@ func (h *hardware) Get_wm() {
 }
 
 func (h *hardware) Get_wm_theme() {
-	h.wm_theme = gui.GetTheme()
+	if h.wm == "" {
+		h.Get_wm()
+	}
+	h.wm_theme = gui.GetWMTheme(h.wm)
 }
 
 func (h *hardware) Get_cpu() {
-	unit := h.CPUTemp
-	if unit == utils.ON {
-		unit = "C"
+	temp := h.CPUTemp
+	if temp == utils.ON {
+		temp = "C"
 	}
-	h.cpu = cli.GetCPU(h.os, h.KernelMachine, h.CPUCores, h.CPUSpeed, h.CPUTemp, h.CPUBrand, h.CPUCores, h.SpeedShorthand, unit, h.SpeedType)
+	h.cpu = cli.GetCPU(h.os, h.KernelMachine, h.CPUCores, h.CPUSpeed, temp, h.CPUBrand, h.SpeedType, h.SpeedShorthand, temp)
 }
 
 func (h *hardware) Get_gpu() {
-	h.gpu = dev.GetGPU(h.os)
+	h.gpu = dev.GetGPU(h.os, h.GPUBrand, h.GPUType)
+}
+
+func (h *hardware) Get_npu() {
+	h.npu = dev.GetAccel()
 }
 
 func (h *hardware) Get_memory() {
 	h.memory = cli.PrintMem(h.os, h.Memory, h.ProgressBar)
+}
+
+func (h *hardware) Get_swap() {
+	h.swap = cli.PrintSwap(h.os, h.Memory.MemoryPercent == utils.ON)
 }
 
 func (h *hardware) Get_network() {
@@ -149,8 +206,15 @@ func (h *hardware) Get_bluetooth() {
 	h.bluetooth = dev.GetBluetooth()
 }
 
+func (h *hardware) Get_song() {
+	h.song = dev.GetSong(h.SongFormat, h.MusicPlayer)
+}
+
 func (h *hardware) Get_resolution() {
-	h.resolution = dev.GetResolution(h.os, h.KernelMachine)
+	h.resolution = dev.GetResolution(h.os, h.KernelMachine, h.RefreshRate == utils.ON)
+}
+
+func (h *hardware) Get_style() {
 }
 
 func (h *hardware) Get_theme() {
@@ -162,11 +226,23 @@ func (h *hardware) Get_icons() {
 }
 
 func (h *hardware) Get_font() {
-	h.term_font = gui.GetFont()
+	h.font = gui.GetFont()
 }
 
 func (h *hardware) Get_cursor() {
 	h.cursor = gui.GetCursor()
+}
+
+func (h *hardware) Get_java_ver() {
+	h.java_ver = cli.ToolVersion([]string{"java"}, "-version")
+}
+
+func (h *hardware) Get_python_ver() {
+	h.python_ver = cli.ToolVersion([]string{"python3", "python"}, "--version")
+}
+
+func (h *hardware) Get_node_ver() {
+	h.node_ver = cli.ToolVersion([]string{"node"}, "--version")
 }
 
 func (h *hardware) Get_term() {
@@ -174,17 +250,130 @@ func (h *hardware) Get_term() {
 }
 
 func (h *hardware) Get_term_font() {
-	h.term_font = gui.GetFont()
+	if h.term == "" {
+		h.Get_term()
+	}
+	h.term_font = gui.GetTermFont(h.term)
 }
 
-func cache_uname() (string, string, string, string) {
-	fields := strings.Fields(cli.UName("-srm"))
-	if len(fields) >= 3 {
-		return fields[0], fields[1], fields[2], ""
+func (h *hardware) Get_disk() {
+	width, _ := strconv.Atoi(h.BarLength)
+	h.disk = cli.GetDisk(cli.DiskReport{
+		Show:      h.DiskShow,
+		Subtitle:  h.DiskSubtitle,
+		Percent:   h.DiskPercent,
+		Display:   h.DiskDisplay,
+		BarWidth:  width,
+		BarFilled: h.BarCharTotal,
+		BarEmpty:  h.BarCharElapsed,
+	})
+}
+
+func (h *hardware) Get_power_adapter() {
+	h.power_adapter = dev.GetPowerAdapter()
+}
+
+func (h *hardware) Get_battery() {
+	h.battery = dev.GetBattery()
+}
+
+func (h *hardware) Get_local_ip() {
+	h.local_ip = dev.LocalIP(h.LocalIPInterface)
+}
+
+func (h *hardware) Get_public_ip() {
+	h.public_ip = dev.PublicIP(h.PublicIPHost, h.PublicIPTimeout)
+}
+
+func (h *hardware) Get_users() {
+	h.users = cli.GetUsers()
+}
+
+func (h *hardware) Get_locale() {
+	h.locale = cli.GetLocale()
+}
+
+func (h *hardware) Get_gpu_driver() {
+	h.gpu_driver = dev.GetGPUDriver()
+}
+
+func (h *hardware) Get_cols() {
+	if h.plainMode() || h.Enabled == utils.OFF {
+		h.cols = ""
+		return
 	}
-	name := map[string]string{"linux": "Linux", "darwin": "Darwin", "windows": "Windows_NT", "freebsd": "FreeBSD", "openbsd": "OpenBSD", "netbsd": "NetBSD", "dragonfly": "DragonFly", "solaris": "SunOS"}[runtime.GOOS]
-	if name == "" {
-		name = runtime.GOOS
+	start, end := 0, 15
+	fmt.Sscanf(strings.NewReplacer("(", " ", ")", " ", ",", " ").Replace(h.BlockRange), "%d %d", &start, &end)
+	width, _ := strconv.Atoi(strings.TrimSpace(h.BlockWidth))
+	height, _ := strconv.Atoi(strings.TrimSpace(h.BlockHeight))
+	h.cols = strings.Join(cli.RenderBlocks(width, height, start, end), "\n")
+}
+
+func (h *hardware) Get_image_source() {
+
+}
+
+func (h *hardware) Get_wallpaper() {
+
+}
+
+func (h *hardware) Get_w3m_img_path() {
+
+}
+
+func (h *hardware) Get_window_size() {
+	if os.Getenv("DISPLAY") == "" || !utils.CommandExists("xdotool") {
+		h.window_size = ""
+		return
 	}
-	return name, "", runtime.GOARCH, ""
+	out := utils.RunCommand("xdotool", "getactivewindow", "getwindowgeometry")
+	for _, line := range strings.Split(out, "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "Geometry:") {
+			h.window_size = strings.TrimSpace(strings.TrimPrefix(line, "Geometry:"))
+			return
+		}
+	}
+}
+
+func (h *hardware) Get_term_size() {
+	h.term_size = cli.GetTermSize()
+}
+
+func (h *hardware) Get_image_size() {
+
+}
+
+func (h *hardware) Get_underline() {
+	if h.UnderlineEnabled == utils.OFF {
+		h.underline = ""
+		return
+	}
+	if h.length == 0 {
+		h.Get_title()
+	}
+	n := h.length
+	if n <= 0 {
+		n = 8
+	}
+	ch := h.UnderlineChar
+	if ch == "" {
+		ch = "-"
+	}
+	line := strings.Repeat(ch, n)
+	if h.plainMode() {
+		h.underline = line
+		return
+	}
+	h.underline = logo.UnderlineColor() + line + logo.ResetCode()
+}
+
+func (h *hardware) Get_bold() {}
+
+func (h *hardware) Get_full_path() {
+
+}
+
+func (h *hardware) Get_user_config() {
+
 }

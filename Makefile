@@ -1,5 +1,5 @@
 NAME := tintfetch
-VERSION ?= 0.1.0-dev
+VERSION ?= 0.3.7-dev
 GO ?= go
 GO_LDFLAGS ?= -buildid=
 PREFIX ?= /usr/local

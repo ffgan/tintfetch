@@ -7,7 +7,7 @@ mkdir -p "$stage/one" "$stage/two"
 tar --exclude=./.git --exclude=./build -cf "$stage/source.tar" .
 tar -xf "$stage/source.tar" -C "$stage/one"
 tar -xf "$stage/source.tar" -C "$stage/two"
-(cd "$stage/one" && GOFLAGS=-buildvcs=false make build VERSION=0.1.0-test)
-(cd "$stage/two" && GOFLAGS=-buildvcs=false make build VERSION=0.1.0-test)
+(cd "$stage/one" && GOFLAGS=-buildvcs=false make build VERSION=0.3.7-test)
+(cd "$stage/two" && GOFLAGS=-buildvcs=false make build VERSION=0.3.7-test)
 cmp "$stage/one/build/tintfetch" "$stage/two/build/tintfetch"
 echo 'Reproducible binary verified across two source paths'

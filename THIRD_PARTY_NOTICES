@@ -10,14 +10,11 @@ Migration source identified by the maintainer: https://github.com/ffgan/hyfetch
 Reference inspected: 2252fc36e76eebc42030c383784f63f9489f5630
 Reference script version: 8.0.4
 
-All 384 files in assets/ match text embedded in that reference's neofetch
+The original 384 files in assets/ match text embedded in that reference's neofetch
 script. See docs/provenance.md and docs/assets.sha256 for the verification
 method and limits. Preserve these notices with redistributed binaries: the
 artwork is embedded in the executable. Distribution names and marks remain
 the property of their respective owners; no endorsement is implied.
-
-HyFetch and neofetch invoked through --engine are separate installed programs,
-not bundled implementations. Their licenses and dependencies apply separately.
 
 The former github.com/armon/go-radix dependency has been replaced by an original
 minimal prefix registry; no third-party Go module is required for this build.
@@ -53,3 +50,10 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+The merge of origin/master at de3e5aa includes 17 additional artwork files and
+native HyFetch/fastfetch module implementations. Pending artwork provenance is
+listed in docs/assets-pending-provenance.txt. Native HyFetch preset/font data and
+color algorithms are derived from the HyFetch project under its MIT license;
+preserve upstream notices when redistributing. External backends are optional,
+separately installed applications, not a substitute for the native implementation.

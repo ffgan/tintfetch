@@ -5,6 +5,7 @@ import (
 	"context"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -29,9 +30,6 @@ func RunCommandCount(name string, args ...string) int {
 	if err != nil {
 		return 0
 	}
-	if len(bytes.TrimSpace(out)) == 0 {
-		return 0
-	}
 	lines := strings.Count(string(out), "\n")
 	if strings.HasSuffix(string(out), "\n") {
 		return lines
@@ -39,8 +37,24 @@ func RunCommandCount(name string, args ...string) int {
 	return lines + 1
 }
 
+type lookResult struct {
+	path string
+	err  error
+}
+
+// lookCache remembers PATH lookups for this process. A fetch run asks
+// about the same tools from several modules; exec.LookPath walks PATH
+// every time otherwise.
+var lookCache sync.Map
+
 func LookPath(file string) (string, error) {
-	return exec.LookPath(file)
+	if v, ok := lookCache.Load(file); ok {
+		r := v.(lookResult)
+		return r.path, r.err
+	}
+	p, err := exec.LookPath(file)
+	lookCache.Store(file, lookResult{path: p, err: err})
+	return p, err
 }
 
 func CommandExists(cmd string) bool {
@@ -48,8 +62,12 @@ func CommandExists(cmd string) bool {
 	return err == nil
 }
 
+// commandTimeout stops a probe that would otherwise sit on a slow
+// Windows helper such as winget, wmic, or a store execution alias.
+const commandTimeout = 8 * time.Second
+
 func CommandOutput(name string, args ...string) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), commandTimeout)
 	defer cancel()
 	command := exec.CommandContext(ctx, name, args...)
 	command.WaitDelay = 100 * time.Millisecond
@@ -58,7 +76,7 @@ func CommandOutput(name string, args ...string) ([]byte, error) {
 }
 
 func CommandCombinedOutput(name string, args ...string) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), commandTimeout)
 	defer cancel()
 	command := exec.CommandContext(ctx, name, args...)
 	command.WaitDelay = 100 * time.Millisecond
@@ -72,15 +90,10 @@ func ExecOutput(name string, args ...string) string {
 }
 
 func GetPkgCount(cmd ...string) int {
-	if len(cmd) == 0 {
-		return 0
-	}
 	out, err := CommandOutput(cmd[0], cmd[1:]...)
 	if err != nil {
 		return 0
 	}
-	if len(bytes.TrimSpace(out)) == 0 {
-		return 0
-	}
-	return len(strings.Split(strings.TrimSpace(string(out)), "\n"))
+	lines := bytes.Count(out, []byte{'\n'})
+	return lines
 }
