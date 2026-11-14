@@ -1,10 +1,9 @@
 # Release and distribution preparation
 
-This merge retains the native features and release history through gf v0.3.6 and
-starts Tintfetch development at 0.3.7-dev. The GitHub remote remains `ffgan/gf`;
-coordinate its rename before publishing the `github.com/ffgan/tintfetch` Go module
-path. Existing release binaries are still named gf; newly generated archives use
-tintfetch. No release tag or distribution submission is created by this merge.
+The current development version is 0.3.7-dev and preserves the native features
+and release history through v0.3.6. The repository is ffgan/tintfetch, the module
+path is github.com/ffgan/tintfetch, and generated binaries and archives use
+tintfetch. No release tag or distribution submission is created automatically.
 
 Before publication:
 

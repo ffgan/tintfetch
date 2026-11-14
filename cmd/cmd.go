@@ -225,16 +225,15 @@ func hyfetchArt(h *hardware, cfg hyfetch.Config, opt hyfetch.Options, theme hyfe
 func findConfig() string {
 	var candidates []string
 	if dir, err := os.UserConfigDir(); err == nil {
-		candidates = append(candidates, filepath.Join(dir, "tintfetch", "config.conf"), filepath.Join(dir, "gf", "config.conf"))
+		candidates = append(candidates, filepath.Join(dir, "tintfetch", "config.conf"))
 	}
 	if home := os.Getenv("HOME"); home != "" {
 		candidates = append(candidates,
 			filepath.Join(home, ".config", "tintfetch", "config.conf"),
-			filepath.Join(home, ".config", "gf", "config.conf"),
 			filepath.Join(home, ".config", "neofetch", "config.conf"),
 		)
 	}
-	candidates = append(candidates, "/etc/tintfetch/config.conf", "/etc/gf/config.conf", neofetchConf, "/etc/neofetch/default.conf")
+	candidates = append(candidates, "/etc/tintfetch/config.conf", neofetchConf, "/etc/neofetch/default.conf")
 	for _, path := range candidates {
 		if utils.FileExists(path) {
 			return path

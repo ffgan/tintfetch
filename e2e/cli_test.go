@@ -17,35 +17,35 @@ import (
 	"github.com/ffgan/tintfetch/cmd"
 )
 
-// TestGF builds the real binary and runs it. Unit tests never entered
+// TestTintfetchCLI builds the real binary and runs it. Unit tests never entered
 // main, so a panic while collecting a line (for example a missing Win32
 // procedure) shipped without being seen.
-func TestGF(t *testing.T) {
-	bin := buildGF(t)
+func TestTintfetchCLI(t *testing.T) {
+	bin := buildTintfetch(t)
 
 	t.Run("version", func(t *testing.T) {
-		stdout, _ := runGF(t, bin, "--version")
+		stdout, _ := runTintfetch(t, bin, "--version")
 		if got := strings.TrimSpace(stdout); got != "tintfetch "+cmd.Version {
 			t.Fatalf("version %q, want tintfetch %s", got, cmd.Version)
 		}
 	})
 
 	t.Run("help", func(t *testing.T) {
-		stdout, stderr := runGF(t, bin, "--help")
+		stdout, stderr := runTintfetch(t, bin, "--help")
 		if !strings.Contains(stdout+stderr, "Usage:") {
 			t.Fatalf("help text missing Usage:\n%s%s", stdout, stderr)
 		}
 	})
 
 	t.Run("print_config", func(t *testing.T) {
-		stdout, _ := runGF(t, bin, "--print_config")
+		stdout, _ := runTintfetch(t, bin, "--print_config")
 		if !strings.Contains(stdout, "print_info()") || !strings.Contains(stdout, "info title") {
 			t.Fatalf("config dump missing print_info:\n%s", stdout)
 		}
 	})
 
 	t.Run("unknown_flag", func(t *testing.T) {
-		stdout, stderr, err := runGFResult(t, bin, "--not-a-real-flag")
+		stdout, stderr, err := runTintfetchResult(t, bin, "--not-a-real-flag")
 		if err == nil {
 			t.Fatalf("unknown flag exited 0\n%s%s", stdout, stderr)
 		}
@@ -55,7 +55,7 @@ func TestGF(t *testing.T) {
 	})
 
 	t.Run("stdout", func(t *testing.T) {
-		stdout, stderr := runGF(t, bin, "--stdout", "--no_config")
+		stdout, stderr := runTintfetch(t, bin, "--stdout", "--no_config")
 		if strings.Contains(stdout, "\x1b") {
 			t.Fatalf("--stdout still emitted ANSI:\n%s", stdout)
 		}
@@ -166,8 +166,8 @@ func TestMacOSDiskAndLocalIP(t *testing.T) {
 	if runtime.GOOS != "darwin" {
 		t.Skip("macOS storage and local IP need a Mac")
 	}
-	bin := buildGF(t)
-	stdout, _ := runGF(t, bin, "--stdout", "--no_config")
+	bin := buildTintfetch(t)
+	stdout, _ := runTintfetch(t, bin, "--stdout", "--no_config")
 
 	used, total, avail := dfBytes(t, "/")
 	wantUsed := used
@@ -347,7 +347,7 @@ func commandOut(t *testing.T, name string, args ...string) string {
 	return string(out)
 }
 
-func buildGF(t *testing.T) string {
+func buildTintfetch(t *testing.T) string {
 	t.Helper()
 	bin := filepath.Join(t.TempDir(), "tintfetch")
 	if runtime.GOOS == "windows" {
@@ -382,16 +382,16 @@ func moduleRoot(t *testing.T) string {
 	}
 }
 
-func runGF(t *testing.T, bin string, args ...string) (string, string) {
+func runTintfetch(t *testing.T, bin string, args ...string) (string, string) {
 	t.Helper()
-	stdout, stderr, err := runGFResult(t, bin, args...)
+	stdout, stderr, err := runTintfetchResult(t, bin, args...)
 	if err != nil {
 		t.Fatalf("%v\nstdout:\n%s\nstderr:\n%s", err, stdout, stderr)
 	}
 	return stdout, stderr
 }
 
-func runGFResult(t *testing.T, bin string, args ...string) (string, string, error) {
+func runTintfetchResult(t *testing.T, bin string, args ...string) (string, string, error) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
 	defer cancel()

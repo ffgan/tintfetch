@@ -2,10 +2,10 @@
 
 ## 0.3.7 — Unreleased
 
-- Rename gf to Tintfetch, including binary/archive names, module path and native
-  configuration namespace; retain legacy gf/Neofetch config fallbacks.
+- Standardize Tintfetch naming across binaries, archives, module path, repository,
+  tests and native configuration namespace; retain Neofetch config fallbacks.
 - Preserve native HyFetch coloring/configuration, fastfetch-style modules, platform
-  fixes, full release matrix and end-to-end tests merged through de3e5aa (gf v0.3.6).
+  fixes, full release matrix and end-to-end tests merged through de3e5aa (v0.3.6).
 - Add explicit trusted Bash configuration and clearer plain/config CLI aliases.
 - Replace go-radix with an in-tree prefix registry; retain offline Go builds.
 - Bound subprocess pipe waits and replace predictable macOS temporary files.

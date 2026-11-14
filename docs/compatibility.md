@@ -1,6 +1,6 @@
 # Compatibility after the master merge
 
-Tintfetch is the renamed gf application. The integration preserves origin/master
+Tintfetch is a native Go system information application. The integration preserves origin/master
 at de3e5aa, including its native Go HyFetch color profiles, complete preset/font
 catalogs, interactive configuration, fastfetch-style module catalog, and platform
 probes. Go 1.26+ is required. Those features are implemented in this repository;
@@ -15,8 +15,8 @@ Some crop, image-loop and image-size flags remain compatibility placeholders;
 their presence is not proof of complete upstream image-protocol parity.
 
 The native configuration namespace is now `tintfetch/config.conf`. User config
-uses the OS user config directory, including XDG_CONFIG_HOME on Linux; legacy
-gf and Neofetch paths remain fallback candidates. Explicit `--config` selects a
+uses the OS user config directory, including XDG_CONFIG_HOME on Linux;
+Neofetch paths remain fallback candidates. Explicit `--config` selects a
 file and CLI options override it. `--no_config` disables info configuration loading.
 HyFetch JSON configuration is handled independently. Existing underscore flags
 remain supported; `--no-config`, `--print-config`, and `--plain` are aliases for

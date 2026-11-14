@@ -281,7 +281,7 @@ func applyAssignments(config *Config, lines []string) error {
 		}
 		key := strings.TrimSpace(parts[0])
 		value := cleanConfigValue(parts[1])
-		_ = SetByGFTag(config, key, value)
+		_ = SetByTag(config, key, value)
 	}
 	return nil
 }

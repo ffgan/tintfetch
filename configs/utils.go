@@ -31,7 +31,7 @@ func registerTags(t reflect.Type) {
 	}
 }
 
-func SetByGFTag(obj any, key, value string) error {
+func SetByTag(obj any, key, value string) error {
 	v := reflect.ValueOf(obj)
 	if v.Kind() != reflect.Ptr || v.IsNil() {
 		return fmt.Errorf("obj must not be a nil pointer")

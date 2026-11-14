@@ -2,7 +2,6 @@
 /dist/
 *.log
 /main
-/gf
 /tintfetch
 /debian/.debhelper/
 /debian/debhelper-build-stamp

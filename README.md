@@ -1,4 +1,4 @@
-# Tintfetch（原 gf）
+# Tintfetch
 
 一个用于快速展示当前系统信息的命令行工具，对标 neofetch / hyfetch。纯 Go 实现，单个二进制文件，默认在左侧绘制发行版 ASCII logo，右侧列出主机信息。
 
@@ -6,7 +6,7 @@ hyfetch 的旗帜配色、预设、`hyfetch.json` 和命令行参数可以直接
 
 ## 安装
 
-[Releases](https://github.com/ffgan/gf/releases) 里按平台放了压缩包。Windows 是 `.zip`，其他系统是 `.tar.gz`。新包里是可执行文件、`LICENSE`、`THIRD_PARTY_NOTICES` 和这份说明。同一个 release 里的 `tintfetch_<version>_checksums.txt` 是 SHA-256。
+[Releases](https://github.com/ffgan/tintfetch/releases) 里按平台放了压缩包。Windows 是 `.zip`，其他系统是 `.tar.gz`。新包里是可执行文件、`LICENSE`、`THIRD_PARTY_NOTICES` 和这份说明。同一个 release 里的 `tintfetch_<version>_checksums.txt` 是 SHA-256。
 
 这些包用当前还在维护的最老 Go 版本构建，版本号写在 [`.go-version`](.go-version)（现在是 Go 1.26）。二进制沿用这个工具链的系统要求，例如 macOS 12，以及 Linux ppc64 的 ELFv1。
 
@@ -95,8 +95,8 @@ tintfetch --custom "hello from tintfetch"
 ## 开源与发行打包
 
 当前开发版为 `0.3.7-dev`。本次更名保留了 master 中的原生 HyFetch、多平台和
-fastfetch 模块实现。现有历史 release 仍以 gf 命名，新构建使用 tintfetch。
-GitHub 仓库仍位于 `ffgan/gf`；发布新模块路径前需要协调仓库更名。
+fastfetch 模块实现。命令、配置目录、源码模块和发布归档统一使用 tintfetch。
+源码仓库为 `ffgan/tintfetch`。
 
 ```sh
 make check

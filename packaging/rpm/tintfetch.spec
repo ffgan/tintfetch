@@ -5,7 +5,7 @@ Version:        0.3.7
 Release:        0.1.dev%{?dist}
 Summary:        System information with colorful distribution artwork
 License:        MIT AND BSD-3-Clause
-URL:            https://github.com/ffgan/gf
+URL:            https://github.com/ffgan/tintfetch
 Source0:        %{url}/archive/refs/tags/v%{version}/%{name}-%{version}.tar.gz
 BuildRequires:  golang >= 1.26
 BuildRequires:  make
