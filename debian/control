@@ -1,11 +1,13 @@
 Source: tintfetch
 Section: utils
 Priority: optional
-Maintainer: ffgan <ffgan@users.noreply.github.com>
-Build-Depends: debhelper-compat (= 13), golang-any (>= 2:1.26~)
+Maintainer: ffgan <ffgandev@gmail.com>
+Build-Depends: debhelper-compat (= 13), python3, golang-any (>= 2:1.26~)
 Standards-Version: 4.7.2
 Homepage: https://github.com/ffgan/tintfetch
 Rules-Requires-Root: no
+Vcs-Git: https://github.com/ffgan/tintfetch.git
+Vcs-Browser: https://github.com/ffgan/tintfetch
 
 Package: tintfetch
 Architecture: any

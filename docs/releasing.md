@@ -7,16 +7,18 @@ tintfetch. No release tag or distribution submission is created automatically.
 
 Before publication:
 
-1. Review pending artwork provenance in assets-pending-provenance.txt and the
-   native HyFetch-derived data/code notices. Preserve LICENSE and
+1. Run the local and pinned-upstream checks in provenance.md; all 401 logos and
+   both HyFetch data files are covered by provenance.json. Review notices for
+   translated code and the Ottosson color conversion. Preserve LICENSE and
    THIRD_PARTY_NOTICES in all archives and binary packages.
 2. Run `make check`, `go test -race ./...`, scripts/smoke.sh and
    scripts/reproducible.sh. Inspect actual cross-platform CI/e2e results.
 3. Verify package/executable name availability and maintainer contact information.
-   The current noreply maintainer address is a repository identity only.
+   Packaging contact: ffgan <ffgandev@gmail.com>.
 4. Update the binary, release-script, DEB and RPM versions together. Build source
    archives from a clean checkout using `make dist VERSION=...` and the release
-   timestamp as SOURCE_DATE_EPOCH. The archive includes the working tree.
+   timestamp as SOURCE_DATE_EPOCH. The archive includes the working tree, excluding VCS-ignored build outputs;
+   inspect its contents and use a clean checkout for publication.
 5. Validate installation/removal, metadata, notices, debuginfo and checksums.
    Publish through maintainer review; presence of packaging is not archive approval.
 
@@ -27,7 +29,7 @@ use sbuild/pbuilder before seeking sponsorship. For source packages, provide an
 appropriately named original tarball. dwz is skipped for Go's compressed DWARF;
 normal stripping and debug-package generation remain enabled.
 
-For Fedora, use a clean Go 1.26+ build root with make, gcc, glibc-devel and RPM
+For Fedora, use a clean Go 1.26+ build root with Python 3, make, gcc, glibc-devel and RPM
 build tools:
 
 ```sh
@@ -45,3 +47,14 @@ and keep examples in documentation. There are no third-party Go modules and
 no module/toolchain downloads during builds. The retained release script also
 supports CGO-disabled builds where the target allows them. Current packaging CI
 uses Debian unstable and Fedora; it does not promise support for all older releases.
+
+The Debian installed-package smoke test is in debian/tests/ (autopkgtest).
+Python 3 is used only for build-time provenance checks and tests. Run Lintian
+on both source and binary packages and rpmlint on the RPM/SRPM outputs.
+The RPM recipe passes the distribution compiler/linker flags to cgo.
+
+Policy reference: https://www.debian.org/doc/debian-policy/ch-source.html
+The package build stays offline, and examples do not execute as shell scripts
+without an explicit user request. Admission still requires a real release tag,
+source-package review, package-name checks and a sponsoring maintainer where
+required; packaging CI is preparation rather than archive acceptance.

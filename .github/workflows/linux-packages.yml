@@ -9,15 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     container: debian:unstable
     steps:
-      - run: apt-get update && apt-get install -y git ca-certificates build-essential debhelper golang-any lintian
+      - run: apt-get update && apt-get install -y git ca-certificates build-essential debhelper golang-any lintian python3
       - uses: actions/checkout@v4
       - run: dpkg-buildpackage -us -uc -b
       - run: lintian --fail-on error ../tintfetch_*.deb
+      - run: dpkg -i ../tintfetch_*.deb && debian/tests/smoke && dpkg -r tintfetch
   fedora:
     runs-on: ubuntu-latest
     container: fedora:latest
     steps:
-      - run: dnf install -y git golang gcc glibc-devel make rpm-build findutils tar gzip
+      - run: dnf install -y git golang gcc glibc-devel make rpm-build findutils tar gzip python3 rpmlint
       - uses: actions/checkout@v4
       - run: make dist VERSION=0.3.7
       - run: rpmbuild -ba packaging/rpm/tintfetch.spec --define "_sourcedir $PWD/build"
+      - run: rpmlint $HOME/rpmbuild/RPMS/*/*.rpm

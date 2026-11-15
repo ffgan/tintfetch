@@ -1,34 +1,69 @@
 #!/usr/bin/env python3
-"""Verify the audited asset snapshot against the pinned upstream script."""
+"""Check local audited bytes, optionally against separately fetched references.
+
+No network access is performed. --fetch prints pinned URLs for the reviewer;
+place each downloaded file under its reference ID in --upstream-dir.
+"""
+import argparse
 import hashlib
+import json
 from pathlib import Path
-import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-REFERENCE_SHA256 = "129a266b0f4fa8bbf34f45f135d2e5f02eb392a169a58c2dd85b570b4754aee0"
+
+
+def digest(data):
+    return hashlib.sha256(data).hexdigest()
+
 
 def main():
-    if len(sys.argv) != 2:
-        raise SystemExit("usage: check-provenance.py /path/to/pinned/neofetch")
-    upstream = Path(sys.argv[1]).read_bytes()
-    if hashlib.sha256(upstream).hexdigest() != REFERENCE_SHA256:
-        raise SystemExit("upstream hash differs from the pinned audit reference")
-    manifest = {}
-    for line in (ROOT / "docs/assets.sha256").read_text().splitlines():
-        digest, name = line.split("  ", 1)
-        manifest[name] = digest
-    assets = sorted((ROOT / "assets").iterdir())
-    if set(manifest) != {str(p.relative_to(ROOT)) for p in assets}:
-        raise SystemExit("asset manifest does not match the asset collection")
-    pending = set((ROOT / "docs/assets-pending-provenance.txt").read_text().splitlines())
-    text = upstream.decode()
-    for asset in assets:
-        data = asset.read_bytes()
-        if hashlib.sha256(data).hexdigest() != manifest[str(asset.relative_to(ROOT))]:
-            raise SystemExit(f"local asset changed: {asset.name}")
-        if str(asset.relative_to(ROOT)) not in pending and data.decode().strip("\n") not in text:
-            raise SystemExit(f"asset not found in reference: {asset.name}")
-    print(f"Verified {len(assets)-len(pending)} assets against pinned reference; {len(pending)} inherited assets await provenance review")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--fetch', action='store_true', help='print reference IDs and URLs only')
+    parser.add_argument('--upstream-dir', type=Path, help='verify pinned upstream files in this directory')
+    args = parser.parse_args()
+    audit = json.loads((ROOT / 'docs/provenance.json').read_text())
+    if args.fetch:
+        for key, ref in audit['references'].items():
+            print(key, ref['url'])
+        return
+    files = audit['files']
+    expected = {str(p.relative_to(ROOT)) for p in (ROOT / 'assets').iterdir()}
+    expected |= {str(p.relative_to(ROOT)) for p in (ROOT / 'internal/hyfetch/data').iterdir()}
+    if set(files) != expected:
+        raise SystemExit('audit inventory differs from embedded assets/data')
+    manifest = dict(line.split('  ', 1)[::-1] for line in (ROOT / 'docs/assets.sha256').read_text().splitlines())
+    if manifest != {name: entry['sha256'] for name, entry in files.items() if name.startswith('assets/')}:
+        raise SystemExit('asset checksum manifest differs from provenance audit')
+    references = {}
+    if args.upstream_dir:
+        for key, ref in audit['references'].items():
+            data = (args.upstream_dir / key).read_bytes()
+            if digest(data) != ref['sha256']:
+                raise SystemExit(f'upstream hash differs: {key}')
+            references[key] = data
+    for name, entry in files.items():
+        data = (ROOT / name).read_bytes()
+        if digest(data) != entry['sha256']:
+            raise SystemExit(f'local file changed without provenance review: {name}')
+        if entry['reference'] not in audit['references']:
+            raise SystemExit(f'unknown upstream reference: {name}')
+        if entry['comparison'] not in ('text', 'bytes', 'json-subset'):
+            raise SystemExit(f'unknown comparison: {name}')
+        if not references:
+            continue
+        ref = references[entry['reference']]
+        if entry['comparison'] == 'text':
+            matches = bool(data.strip(b'\n')) and data.strip(b'\n') in ref
+        elif entry['comparison'] == 'bytes':
+            matches = data == ref
+        else:
+            local, upstream = json.loads(data), json.loads(ref)
+            matches = all(key in upstream and value == upstream[key] for key, value in local.items())
+        if not matches:
+            raise SystemExit(f'local file does not match upstream: {name}')
+    scope = 'pinned upstream references' if references else 'audited local checksums (upstream comparison not run)'
+    print(f'Verified {len(files)} files against {scope}')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()

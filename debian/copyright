@@ -10,6 +10,12 @@ Comment: Includes code and artwork migrated from the HyFetch-maintained
  Neofetch script. The reference revision and asset checksums are recorded
  in docs/provenance.md and docs/assets.sha256.
 
+Files: internal/hyfetch/okhsl.go
+Copyright: 2021 Björn Ottosson
+           2026 ffgan
+License: MIT
+Comment: Adapted from the MIT-licensed ok_color.h; see docs/provenance.md.
+
 License: MIT
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +35,9 @@ License: MIT
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 
-License: BSD-3-Clause
 Comment: Compiled executables also contain the Go runtime and standard library.
- Their license and copyright notice are reproduced in THIRD_PARTY_NOTICES.
- Copyright 2009 The Go Authors.
- .
+ Copyright 2009 The Go Authors. Their notice is also in THIRD_PARTY_NOTICES.
+License: BSD-3-Clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
  met:

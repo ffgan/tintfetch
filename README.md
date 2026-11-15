@@ -99,7 +99,7 @@ fastfetch 模块实现。命令、配置目录、源码模块和发布归档统�
 源码仓库为 `ffgan/tintfetch`。
 
 ```sh
-make check
+make check  # 另需 Python 3，用于离线来源校验
 make build
 make install PREFIX=/usr DESTDIR="$PWD/build/stage"
 ./build/tintfetch --plain --no-config
@@ -112,5 +112,6 @@ Bash 配置必须显式启用且提供文件路径；普通配置不会作为 sh
 DEB/RPM 配方、手册、贡献规范和 CI 均已加入。详见
 [兼容性说明](docs/compatibility.md)、[发行说明](docs/releasing.md)、
 [贡献指南](CONTRIBUTING.md) 和 [来源审计](docs/provenance.md)。
-384 个原有 ASCII 素材已匹配到固定上游版本；合并继承的另外 17 个素材仍待来源核查。
-正式入库前应完成这项核查及发行版维护者审核。
+401 个 ASCII 素材和两份 HyFetch 数据均已匹配到固定上游版本，
+并记录校验和；`make check-provenance` 在离线构建时检查审计快照。
+OKHSL 转换保留 Björn Ottosson 的 MIT 署名。正式入库仍需发行版维护者审核。

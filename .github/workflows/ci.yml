@@ -113,7 +113,7 @@ jobs:
 
   publish:
     name: publish release
-    needs: [test, e2e, package, package-ios]
+    needs: [test, e2e, package, package-ios, source-audit]
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
@@ -161,3 +161,22 @@ jobs:
             Go 1.26 已经去掉 `windows/arm`，也不再列出 `freebsd/riscv64`，所以这两个移植不在这个 release 里。
 
             每个压缩包里是可执行文件、LICENSE 和 README。SHA-256 在 `tintfetch_*_checksums.txt`。
+
+  source-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify local audited files
+        run: make check-provenance
+      - name: Compare with pinned upstream references
+        run: |
+          mkdir -p build/upstream
+          python3 scripts/check-provenance.py --fetch | while read -r name url; do
+            curl --fail --location --retry 3 "$url" -o "build/upstream/$name" || exit 1
+          done
+          python3 scripts/check-provenance.py --upstream-dir build/upstream
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: .go-version
+          cache: false
+      - run: make build && sh scripts/smoke.sh && sh scripts/reproducible.sh

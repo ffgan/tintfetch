@@ -51,9 +51,14 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-The merge of origin/master at de3e5aa includes 17 additional artwork files and
-native HyFetch/fastfetch module implementations. Pending artwork provenance is
-listed in docs/assets-pending-provenance.txt. Native HyFetch preset/font data and
-color algorithms are derived from the HyFetch project under its MIT license;
-preserve upstream notices when redistributing. External backends are optional,
-separately installed applications, not a substitute for the native implementation.
+Additional artwork is matched against pinned HyFetch revisions in
+docs/provenance.json, including the historical AOSC OS/Retro logo.
+Native HyFetch preset/font data and color behavior are derived from HyFetch
+under the MIT license above. Preset source comments are retained in the JSON.
+
+OKHSL / Oklab conversion in internal/hyfetch/okhsl.go
+Copyright (c) 2021 Björn Ottosson
+License: MIT (full permission and warranty text in LICENSE)
+Source: https://bottosson.github.io/misc/ok_color.h
+Pinned reference: bottosson/bottosson.github.io at
+7561fbab5c8b982020ed212aebb0b8620c44b228 (misc/ok_color.h)

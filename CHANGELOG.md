@@ -9,10 +9,19 @@
 - Add explicit trusted Bash configuration and clearer plain/config CLI aliases.
 - Replace go-radix with an in-tree prefix registry; retain offline Go builds.
 - Bound subprocess pipe waits and replace predictable macOS temporary files.
-- Restore upstream/runtime license notices; verify 384 original artwork files and
-  record 17 inherited artwork files requiring further provenance review.
+- Restore upstream/runtime license notices and verify all 401 artwork files
+  against pinned upstream references.
 - Add staged installation, manual, contribution/security docs and DEB/RPM recipes
   with package CI, PIE/RELRO and debug metadata.
 
 Distribution acceptance and complete upstream image-protocol parity remain
 future milestones. No release tag is created by this preparation work.
+
+### Distribution preparation
+
+- Complete pinned-source matching for all 401 logos and both HyFetch JSON files.
+- Preserve the MIT attribution for Björn Ottosson's OKHSL conversion.
+- Enforce offline provenance checks during checks/source archive creation; compare
+  pinned upstream references in CI.
+- Add installed Debian smoke tests, maintainer contact, RPM system cgo flags,
+  and install the audit manifests with documentation.

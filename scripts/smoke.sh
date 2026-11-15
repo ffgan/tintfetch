@@ -3,6 +3,8 @@ set -eu
 binary=${1:-build/tintfetch}
 stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT HUP INT TERM
+export HOME="$stage/home" XDG_CONFIG_HOME="$stage/home/.config"
+mkdir -p "$XDG_CONFIG_HOME"
 "$binary" --version
 "$binary" --print-config > "$stage/config.conf"
 "$binary" --config "$stage/config.conf" --plain > "$stage/plain"

@@ -1,8 +1,12 @@
+// Copyright (c) 2021 Björn Ottosson
+// SPDX-License-Identifier: MIT
+// Adapted from https://bottosson.github.io/misc/ok_color.h
+
 package hyfetch
 
 import "math"
 
-// OKHSL conversion follows Björn Ottosson's public algorithm. Hyfetch's Rust
+// OKHSL conversion follows Björn Ottosson's MIT-licensed algorithm. Hyfetch's Rust
 // build sets palette::Okhsl lightness with the same transform.
 
 func srgbToLinear(c float64) float64 {

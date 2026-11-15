@@ -40,5 +40,6 @@ Linux is the primary distribution-packaging target. Existing Linux/macOS/Windows
 end-to-end tests, native platform tests, and full release-target matrix are
 retained. Cross-compilation does not establish runtime correctness for every
 upstream platform or module. See README.md for module and release usage, and
-releasing.md for distribution review requirements. Newly inherited artwork that
-still requires source review is listed in assets-pending-provenance.txt.
+releasing.md for distribution review requirements. All 401 embedded logos and
+both HyFetch data files have pinned source matches recorded in provenance.json;
+see provenance.md for the verification method and its limits.

@@ -1,5 +1,7 @@
-tintfetch (0.3.7~dev-1) unstable; urgency=medium
+tintfetch (0.3.7~dev-1) UNRELEASED; urgency=medium
 
   * Initial development packaging; not submitted to the Debian archive.
+  * Complete embedded artwork/data provenance, color conversion attribution,
+    offline audit checks and installed-package smoke tests.
 
- -- ffgan <ffgan@users.noreply.github.com>  Sun, 15 Nov 2026 00:00:00 +0800
+ -- ffgan <ffgandev@gmail.com>  Sun, 15 Nov 2026 00:00:00 +0800
