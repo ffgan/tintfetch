@@ -1,13 +1,13 @@
 # Development snapshot for initial Fedora review; replace with a release tarball
 # when 0.3.7 is published. The source is an immutable, public upstream commit.
-%global commit 92430d863e1bc931a4dba7d3767a67e6ce89590d
+%global commit 26cabf96b21f2da2590c6a2e3a4f2b16d16179c2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global snapdate 20261115
 %undefine _debugsource_packages
 
 Name:           tintfetch
 Version:        0.3.7
-Release:        0.2.%{snapdate}git%{shortcommit}%{?dist}
+Release:        0.3.%{snapdate}git%{shortcommit}%{?dist}
 Summary:        System information with colorful distribution artwork
 License:        GPL-2.0-or-later AND MIT AND BSD-3-Clause
 URL:            https://github.com/ffgan/tintfetch
@@ -66,6 +66,11 @@ sh scripts/smoke.sh
 %{_mandir}/man1/%{name}.1*
 
 %changelog
+* Sun Nov 15 2026 ffgan <ffgandev@gmail.com> - 0.3.7-0.3.20261115git26cabf9
+- Package the GPL ARM registry with complete input sources and license texts
+- Check the cumulative GPL, MIT and BSD expression using Go Vendor Tools
+- Include AI assistance disclosure and source-publication verification
+
 * Sun Nov 15 2026 ffgan <ffgandev@gmail.com> - 0.3.7-0.2.20261115git92430d8
 - Pin the review source to a public upstream snapshot
 - Build with Fedora Go macros and run offline provenance and smoke tests
