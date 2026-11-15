@@ -11,5 +11,5 @@ sha256sum = "6aac2619795e5bbf3a8f0c061af51c9d1aa87962d2fb6cdc1526775e4293ffde"
 expression = "BSD-3-Clause AND GPL-2.0-or-later AND MIT"
 [[licensing.licenses]]
 path = "COPYING"
-sha256sum = "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+sha256sum = "edaef632cbb643e4e7a221717a6c441a4c1a7c918e6e4d56debc3d8739b233f6"
 expression = "GPL-2.0-or-later"

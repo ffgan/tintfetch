@@ -95,7 +95,9 @@ library is built or linked; the original files are retained as generator source.
 `make check-provenance` reproduces and compares the generated file offline.
 `internal/CLI/data/README` records full URLs and notices.
 
-COPYING contains the complete GPL version 2 text. LICENSE defines the scope of
+COPYING contains the complete current FSF GPL version 2 text from
+https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt (including its current
+contact URL rather than an obsolete postal address). LICENSE defines the scope of
 the MIT portions; THIRD_PARTY_NOTICES retains all upstream notices. Binaries
 incorporating the registry are distributed under GPL-2.0-or-later. The release
 workflow publishes complete corresponding source and refuses binary archives
