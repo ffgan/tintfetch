@@ -86,7 +86,7 @@ func DefaultConfig() Config {
 			QT:           utils.ON,
 		},
 		IPAddress: IPAddress{
-			PublicIPHost:     "http://ident.me",
+			PublicIPHost:     "https://ident.me",
 			PublicIPTimeout:  "2",
 			LocalIPInterface: "('auto')",
 		},

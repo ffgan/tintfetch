@@ -9,3 +9,6 @@
 /debian/tintfetch/
 /debian/*.debhelper
 /debian/*.substvars
+
+__pycache__/
+*.pyc

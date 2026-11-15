@@ -1,0 +1,15 @@
+[licensing]
+detector = "askalono"
+# THIRD_PARTY_NOTICES contains full MIT and Go runtime BSD-3-Clause notices,
+# plus the adopted GPL-2.0-or-later scope of the generated ARM registry.
+# askalono does not discover this nonstandard filename by default. Hash-pin the
+# explicit classification. COPYING is GPL-2.0-or-later because the source
+# grant and generated-file SPDX identifier include the later-version option.
+[[licensing.licenses]]
+path = "THIRD_PARTY_NOTICES"
+sha256sum = "6aac2619795e5bbf3a8f0c061af51c9d1aa87962d2fb6cdc1526775e4293ffde"
+expression = "BSD-3-Clause AND GPL-2.0-or-later AND MIT"
+[[licensing.licenses]]
+path = "COPYING"
+sha256sum = "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+expression = "GPL-2.0-or-later"

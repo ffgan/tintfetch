@@ -25,3 +25,14 @@ future milestones. No release tag is created by this preparation work.
   pinned upstream references in CI.
 - Add installed Debian smoke tests, maintainer contact, RPM system cgo flags,
   and install the audit manifests with documentation.
+
+### Fedora review and license remediation
+
+- Regenerate the ARM ID registry from pinned util-linux GPL-2.0-or-later and
+  Fastfetch MIT source inputs; retain all 209 earlier mappings.
+- Include GPL terms, complete generator inputs and corresponding-source release
+  gates while preserving MIT source and BSD runtime notices.
+- Disclose substantial AI-assisted development and require human responsibility.
+- Use Fedora Go macros, a pinned source snapshot and go-vendor-tools license
+  checks; fix the RPM description spelling error and check source/binary RPMs.
+- Use HTTPS for the default optional public-IP endpoint.

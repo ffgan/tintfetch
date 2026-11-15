@@ -62,3 +62,48 @@ License: MIT (full permission and warranty text in LICENSE)
 Source: https://bottosson.github.io/misc/ok_color.h
 Pinned reference: bottosson/bottosson.github.io at
 7561fbab5c8b982020ed212aebb0b8620c44b228 (misc/ok_color.h)
+
+Fastfetch reference-derived module behavior and ARM data
+The ARM registry in internal/CLI/armids_data.go follows the Fastfetch cpu_arm.h
+table, which itself cites util-linux lscpu-arm.c data. The combined generated
+registry is distributed under GPL-2.0-or-later AND MIT,
+observing util-linux's GPL terms and preserving Fastfetch's MIT notice.
+Inspected reference (not a claim of the original migration revision):
+https://github.com/fastfetch-cli/fastfetch/blob/73368d36d99c5e647782346b7c075aac12599e45/src/detection/cpu/cpu_arm.h
+
+MIT License
+
+Copyright (c) 2021-2023 Linus Dierheimer
+Copyright (c) 2022-2026 Carter Li
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+util-linux ARM implementer/part data
+Copyright (C) 2018 Riku Voipio <riku.voipio@iki.fi>
+SPDX-License-Identifier: GPL-2.0-or-later
+Source: https://github.com/util-linux/util-linux/blob/d6abbbab2cf284597720b8426fdd67c5cef7c9f8/sys-utils/lscpu-arm.c
+Full GPL version 2 license text: COPYING
+
+The checked-in source input and scripts/generate-arm-ids.py reproduce
+internal/CLI/armids_data.go. Fastfetch additions and display spellings retain
+the MIT terms above. The combined registry follows GPL-2.0-or-later AND MIT;
+Tintfetch executables incorporating it are distributed under GPL-2.0-or-later.
+Other application source files retain their MIT licenses. The Go runtime's
+BSD-3-Clause notice above remains applicable. Preserve all of these notices
+and provide complete corresponding source when redistributing executables.

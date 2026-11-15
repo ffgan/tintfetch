@@ -6,7 +6,7 @@ hyfetch 的旗帜配色、预设、`hyfetch.json` 和命令行参数可以直接
 
 ## 安装
 
-[Releases](https://github.com/ffgan/tintfetch/releases) 里按平台放了压缩包。Windows 是 `.zip`，其他系统是 `.tar.gz`。新包里是可执行文件、`LICENSE`、`THIRD_PARTY_NOTICES` 和这份说明。同一个 release 里的 `tintfetch_<version>_checksums.txt` 是 SHA-256。
+[Releases](https://github.com/ffgan/tintfetch/releases) 里按平台放了压缩包。Windows 是 `.zip`，其他系统是 `.tar.gz`。新包里是可执行文件、`LICENSE`、`COPYING`、`THIRD_PARTY_NOTICES`、`SOURCE.txt` 和这份说明。同一个 release 里的 `tintfetch_<version>_checksums.txt` 是 SHA-256。
 
 这些包用当前还在维护的最老 Go 版本构建，版本号写在 [`.go-version`](.go-version)（现在是 Go 1.26）。二进制沿用这个工具链的系统要求，例如 macOS 12，以及 Linux ppc64 的 ELFv1。
 
@@ -115,3 +115,19 @@ DEB/RPM 配方、手册、贡献规范和 CI 均已加入。详见
 401 个 ASCII 素材和两份 HyFetch 数据均已匹配到固定上游版本，
 并记录校验和；`make check-provenance` 在离线构建时检查审计快照。
 OKHSL 转换保留 Björn Ottosson 的 MIT 署名。正式入库仍需发行版维护者审核。
+
+本项目大量使用 AI 辅助开发，包括历史上的 Cursor Agent，以及近期由 OpenAI Codex
+辅助的来源审计和发行打包工作。AI 使用披露、贡献者责任和人工复核要求见
+[贡献指南](CONTRIBUTING.md#ai-assistance-and-human-review)。自动化检查通过不代表
+发行版批准，也不代表所有代码来源已完成人工核查。
+
+## 许可与对应源码
+
+ARM ID 表明确采用 util-linux 的 GPL-2.0-or-later 数据，并保留 Fastfetch 的 MIT
+贡献声明。包含该表的 Tintfetch 二进制按 GPL-2.0-or-later 分发；其余 MIT 源文件
+继续保留 MIT 许可，Go 运行时保留 BSD 声明。完整 GPL 文本见 `COPYING`，逐项说明
+见 `THIRD_PARTY_NOTICES` 和 [来源说明](docs/provenance.md)。
+
+正式 release 同时提供 `tintfetch_<version>_source.tar.gz`，内含构建二进制所需的
+全部项目源码、素材、ARM 原始输入、生成脚本和构建安装脚本。重新分发二进制时，
+应按 GPL 提供完整对应源码；仅附仓库链接或许可证文件不足以替代该义务。

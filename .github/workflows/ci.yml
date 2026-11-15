@@ -138,6 +138,11 @@ jobs:
           mkdir -p dist
           find downloaded -type f \( -name '*.tar.gz' -o -name '*.zip' \) -exec mv {} dist/ \;
           find dist -type f | wc -l
+      - name: Complete corresponding source
+        run: |
+          make dist VERSION="$VERSION"
+          cp "build/tintfetch-$VERSION.tar.gz" "dist/tintfetch_${VERSION}_source.tar.gz"
+          python3 scripts/check-release-source.py dist "$VERSION"
       - name: Check the archive set
         run: bash scripts/build-release.sh --expect-dist
       - name: Checksums
@@ -160,7 +165,7 @@ jobs:
 
             Go 1.26 已经去掉 `windows/arm`，也不再列出 `freebsd/riscv64`，所以这两个移植不在这个 release 里。
 
-            每个压缩包里是可执行文件、LICENSE 和 README。SHA-256 在 `tintfetch_*_checksums.txt`。
+            每个二进制包包含 LICENSE、COPYING、THIRD_PARTY_NOTICES 和源码说明。完整对应源码在同一 release 的 `tintfetch_*_source.tar.gz`，二进制按 GPL-2.0-or-later 分发。SHA-256 在 `tintfetch_*_checksums.txt`。
 
   source-audit:
     runs-on: ubuntu-latest
@@ -180,3 +185,4 @@ jobs:
           go-version-file: .go-version
           cache: false
       - run: make build && sh scripts/smoke.sh && sh scripts/reproducible.sh
+      - run: sh scripts/test-release-source.sh

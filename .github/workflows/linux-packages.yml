@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     container: fedora:latest
     steps:
-      - run: dnf install -y git golang gcc glibc-devel make rpm-build findutils tar gzip python3 rpmlint
+      - run: dnf install -y git golang gcc glibc-devel make rpm-build rpmdevtools go-rpm-macros go-vendor-tools askalono-cli findutils tar gzip python3 rpmlint
       - uses: actions/checkout@v4
-      - run: make dist VERSION=0.3.7
+      - run: mkdir -p build && spectool -g -C build packaging/rpm/tintfetch.spec
       - run: rpmbuild -ba packaging/rpm/tintfetch.spec --define "_sourcedir $PWD/build"
-      - run: rpmlint $HOME/rpmbuild/RPMS/*/*.rpm
+      - run: rpmlint packaging/rpm/tintfetch.spec $HOME/rpmbuild/SRPMS/*.rpm $HOME/rpmbuild/RPMS/*/*.rpm

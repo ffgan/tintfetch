@@ -1,3 +1,12 @@
+License scope
+
+This MIT license applies to the MIT-licensed portions of Tintfetch. The ARM ID
+registry and its util-linux source input are GPL-2.0-or-later; Fastfetch
+contributions also retain their MIT terms. See COPYING and THIRD_PARTY_NOTICES.
+Executables combining these portions are distributed under GPL-2.0-or-later,
+with the applicable MIT and BSD notices retained. See docs/provenance.md for
+file-level scope and README.md for corresponding-source distribution.
+
 MIT License
 
 Copyright (c) 2025-2026 ffgan

@@ -1,0 +1,28 @@
+ARM registry source inputs (checked into the source distribution)
+
+lscpu-arm.c
+  Upstream: util-linux
+  Revision: d6abbbab2cf284597720b8426fdd67c5cef7c9f8
+  URL: https://github.com/util-linux/util-linux/blob/d6abbbab2cf284597720b8426fdd67c5cef7c9f8/sys-utils/lscpu-arm.c
+  License: GPL-2.0-or-later (notice in the original file; full text in COPYING)
+  Copyright (C) 2018 Riku Voipio <riku.voipio@iki.fi>
+
+fastfetch_cpu_arm.h
+  Upstream: fastfetch
+  Revision: 73368d36d99c5e647782346b7c075aac12599e45
+  URL: https://github.com/fastfetch-cli/fastfetch/blob/73368d36d99c5e647782346b7c075aac12599e45/src/detection/cpu/cpu_arm.h
+  License: MIT for Fastfetch's contributions; the file also identifies the
+    util-linux GPL data lineage. This project observes GPL-2.0-or-later for
+    the combined registry rather than relying on a data-only exception.
+  Copyright (c) 2021-2023 Linus Dierheimer
+  Copyright (c) 2022-2026 Carter Li
+  Full MIT text and attribution: THIRD_PARTY_NOTICES
+
+Regenerate: python3 scripts/generate-arm-ids.py
+Verify: python3 scripts/generate-arm-ids.py --check
+
+The generator takes util-linux's ID tables and adds Fastfetch's extra entries
+and display spellings. It generates armids_data.go, licensed under
+GPL-2.0-or-later AND MIT. The input C/C++ files are source material for the
+registry generator; they are not compiled into separate native libraries.
+Source hashes are pinned in the generator. No downloads occur during builds.

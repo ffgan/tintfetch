@@ -167,8 +167,18 @@ if [[ "$mode" == print || "$mode" == expect ]]; then
 			missing=1
 		fi
 	done < <(list_targets)
+	source_name="tintfetch_${version}_source.tar.gz"
+	if [[ "$mode" == print ]]; then
+		printf '%s\n' "$source_name"
+	elif [[ ! -f "$dist/$source_name" ]]; then
+		echo "missing $source_name" >&2
+		missing=1
+	fi
 	exit "$missing"
 fi
+
+python3 scripts/check-provenance.py
+python3 scripts/generate-arm-ids.py --check
 
 workdir=$(mktemp -d)
 trap 'rm -rf "$workdir"' EXIT
@@ -229,18 +239,27 @@ while IFS=$'\t' read -r goos goarch label kind extra; do
 	echo "build ${goos}/${label}"
 	"${run[@]}" "${args[@]}"
 
-	cp "$root/LICENSE" "$root/README.md" "$root/THIRD_PARTY_NOTICES" "$stage/"
+	cp "$root/LICENSE" "$root/COPYING" "$root/README.md" "$root/THIRD_PARTY_NOTICES" "$stage/"
+	cat >"$stage/SOURCE.txt" <<EOF
+Tintfetch ${version}
+This executable is distributed under GPL-2.0-or-later with MIT and BSD notices.
+Complete corresponding source: tintfetch_${version}_source.tar.gz, provided
+alongside the executable archives in the same release. Keep that source
+available when redistributing these executables in accordance with GPL section 3.
+Build and installation instructions are included in the source archive.
+Project: https://github.com/ffgan/tintfetch
+EOF
 	name=$(archive_name "$goos" "$label")
 	if [[ "$goos" == windows ]]; then
 		python3 - "$dist/$name" "$binname" "$stage" <<'PY'
 import os, sys, zipfile
 dest, binname, stage = sys.argv[1], sys.argv[2], sys.argv[3]
 with zipfile.ZipFile(dest, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-    for fn in (binname, "LICENSE", "README.md", "THIRD_PARTY_NOTICES"):
+    for fn in (binname, "LICENSE", "COPYING", "README.md", "THIRD_PARTY_NOTICES", "SOURCE.txt"):
         zf.write(os.path.join(stage, fn), fn)
 PY
 	else
-		tar -C "$stage" -czf "$dist/$name" "$binname" LICENSE README.md THIRD_PARTY_NOTICES
+		tar -C "$stage" -czf "$dist/$name" "$binname" LICENSE COPYING README.md THIRD_PARTY_NOTICES SOURCE.txt
 	fi
 	built=$((built + 1))
 done < <(list_targets)
@@ -249,6 +268,9 @@ if [[ "$built" -eq 0 ]]; then
 	echo "no targets built" >&2
 	exit 1
 fi
+
+python3 scripts/create-source-archive.py "$version" "$dist/tintfetch_${version}_source.tar.gz"
+python3 scripts/check-release-source.py "$dist" "$version"
 
 host_archive="$dist/tintfetch_${version}_linux_amd64.tar.gz"
 if [[ "$(uname -s)" == Linux && -f "$host_archive" ]]; then
@@ -262,4 +284,4 @@ if [[ "$(uname -s)" == Linux && -f "$host_archive" ]]; then
 	fi
 fi
 
-echo "built ${built} archives in ${dist}"
+echo "built ${built} binary archives and corresponding source in ${dist}"
